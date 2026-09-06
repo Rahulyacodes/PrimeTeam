@@ -15,7 +15,7 @@ export const GRADIENT_PRESETS = [
   { name: 'Golden Hour', value: 'linear-gradient(135deg, #F12711 0%, #F5AF19 100%)' },
 ]
 
-function BoardNavbar({ board, onBoardUpdate, filterMemberId, setFilterMemberId, filterText, setFilterText }) {
+function BoardNavbar({ board, onBoardUpdate, filterMemberId, setFilterMemberId, filterText, setFilterText, isChatOpen, setIsChatOpen, unreadCount }) {
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -625,6 +625,31 @@ function BoardNavbar({ board, onBoardUpdate, filterMemberId, setFilterMemberId, 
             </div>
           )}
         </div>
+
+        {/* Chat Toggle Button */}
+        <button
+          onClick={() => {
+            if (setIsChatOpen) {
+              setIsChatOpen(!isChatOpen)
+            }
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-xs font-semibold cursor-pointer ${
+            isChatOpen
+              ? 'bg-purple-600/30 border-purple-500/80 text-purple-300 shadow-md shadow-purple-900/30'
+              : 'bg-[#181824] border-[#2A2A3A] hover:border-purple-500/50 text-gray-200 hover:text-white'
+          }`}
+          title="Toggle Board Chat"
+        >
+          <svg className="w-3.5 h-3.5 text-purple-400 stroke-purple-400 fill-none" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <span>Chat</span>
+          {unreadCount > 0 && (
+            <span className="bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full leading-none animate-pulse">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </button>
 
         {/* Share Button */}
         <button
