@@ -403,7 +403,7 @@ function SettingsPage() {
                 <button
                   type="submit"
                   disabled={profileLoading}
-                  className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 active:scale-[0.98] disabled:opacity-50 text-xs font-bold text-white shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-transparent border-2 border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white active:scale-[0.98] disabled:opacity-50 text-xs font-bold transition-all cursor-pointer"
                 >
                   {profileLoading ? 'Saving Changes...' : 'Save Profile Changes'}
                 </button>
@@ -475,7 +475,7 @@ function SettingsPage() {
                     <button
                       type="submit"
                       disabled={emailChangeLoading}
-                      className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-xs text-white transition-all shadow-lg shadow-purple-600/30 cursor-pointer disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-transparent border-2 border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white font-semibold text-xs transition-all cursor-pointer disabled:opacity-50"
                     >
                       {emailChangeLoading ? 'Sending OTP...' : 'Send Verification OTP'}
                     </button>
@@ -524,7 +524,7 @@ function SettingsPage() {
                   <button
                     type="submit"
                     disabled={emailChangeLoading || emailOtp.length !== 6}
-                    className="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-xs text-white transition-all shadow-lg shadow-purple-600/30 cursor-pointer disabled:opacity-50"
+                    className="w-full py-3 rounded-xl bg-transparent border-2 border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white font-semibold text-xs transition-all cursor-pointer disabled:opacity-50"
                   >
                     {emailChangeLoading ? 'Verifying & Updating...' : 'Confirm & Update Email'}
                   </button>
@@ -617,7 +617,7 @@ function SettingsPage() {
                 <button
                   type="submit"
                   disabled={securityLoading}
-                  className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 active:scale-[0.98] disabled:opacity-50 text-xs font-bold text-white shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-transparent border-2 border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white active:scale-[0.98] disabled:opacity-50 text-xs font-bold transition-all cursor-pointer"
                 >
                   {securityLoading ? 'Updating Password...' : 'Update Password'}
                 </button>

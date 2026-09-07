@@ -496,7 +496,7 @@ function BoardPage() {
         <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />
 
         {/* Board Specific Navbar */}
-        <div className="relative z-20">
+        <div className="relative z-30">
           <BoardNavbar
             board={board}
             onBoardUpdate={handleBoardUpdate}
@@ -512,7 +512,7 @@ function BoardPage() {
 
         {/* Read-Only Mode Notice Banner */}
         {isViewer && (
-          <div className="relative z-20 bg-amber-500/20 border-b border-amber-500/30 backdrop-blur-md px-4 py-2 text-center text-xs text-amber-200 font-semibold flex items-center justify-center gap-2">
+          <div className="relative z-10 bg-amber-500/20 border-b border-amber-500/30 backdrop-blur-md px-4 py-2 text-center text-xs text-amber-200 font-semibold flex items-center justify-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-amber-300">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
