@@ -20,7 +20,12 @@ const io = new Server(server, {
 // Store io instance on app for route access
 app.set('io', io)
 
+const registerHuddleHandlers = require('./sockets/huddleHandler')
+
 io.on('connection', (socket) => {
+  // Register WebRTC Huddle signaling handlers
+  registerHuddleHandlers(io, socket)
+
   // Join a board room
   socket.on('join_board', (boardId) => {
     if (boardId) {
