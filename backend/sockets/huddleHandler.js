@@ -39,6 +39,7 @@ module.exports = function registerHuddleHandlers(io, socket) {
   socket.on('huddle:join', ({ boardId, user }) => {
     if (!boardId) return
 
+    socket.join(`board:${boardId}`)
     socket.join(`huddle:${boardId}`)
     socket.currentHuddleBoardId = boardId
 

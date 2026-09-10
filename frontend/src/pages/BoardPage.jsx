@@ -21,6 +21,9 @@ import CardDetailModal, { getDueDateStatus, renderDueIcon } from '../components/
 import BoardChatPanel from '../components/board/BoardChatPanel'
 import { formatBackgroundStyle, DEFAULT_BACKGROUND } from '../utils/backgrounds'
 import { io } from 'socket.io-client'
+import { useWebRTC } from '../hooks/useWebRTC'
+import BoardHuddleModal from '../components/board/BoardHuddleModal'
+import OngoingVCAlertModal from '../components/board/OngoingVCAlertModal'
 
 
 
@@ -38,6 +41,32 @@ function BoardPage() {
   // Chat state: open/closed and unread badge count
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+
+  // In-Board Video Call (Huddle) state and WebRTC engine
+  const [isHuddleOpen, setIsHuddleOpen] = useState(false)
+  const {
+    localStream: huddleLocalStream,
+    peers: huddlePeers,
+    activeParticipants: huddleActiveParticipants,
+    isHuddleActive,
+    isAudioMuted: isHuddleAudioMuted,
+    isVideoOff: isHuddleVideoOff,
+    isScreenSharing: isHuddleScreenSharing,
+    connectionStatus: huddleConnectionStatus,
+    joinHuddle,
+    leaveHuddle,
+    toggleAudio: toggleHuddleAudio,
+    toggleVideo: toggleHuddleVideo,
+    toggleScreenShare: toggleHuddleScreenShare
+  } = useWebRTC({ boardId, user })
+
+  // State to track if the user has dismissed the ongoing V-Chat popup alert
+  const [hasDismissedOngoingVC, setHasDismissedOngoingVC] = useState(false)
+  useEffect(() => {
+    if (huddleActiveParticipants.length === 0) {
+      setHasDismissedOngoingVC(false)
+    }
+  }, [huddleActiveParticipants.length])
 
   // Adding new list state
   const [isAddingList, setIsAddingList] = useState(false)
@@ -507,6 +536,10 @@ function BoardPage() {
             isChatOpen={isChatOpen}
             setIsChatOpen={setIsChatOpen}
             unreadCount={unreadCount}
+            isHuddleOpen={isHuddleOpen}
+            setIsHuddleOpen={setIsHuddleOpen}
+            isHuddleActive={isHuddleActive}
+            huddleParticipantsCount={huddleActiveParticipants.length}
           />
         </div>
 
@@ -1064,6 +1097,40 @@ function BoardPage() {
           </div>
         </div>
       )}
+
+      {/* In-Board Video Calling (V-Chat) Modal / Floating Dock */}
+      <BoardHuddleModal
+        isOpen={isHuddleOpen || isHuddleActive}
+        onClose={() => setIsHuddleOpen(false)}
+        localStream={huddleLocalStream}
+        peers={huddlePeers}
+        activeParticipants={huddleActiveParticipants}
+        currentUser={user}
+        isAudioMuted={isHuddleAudioMuted}
+        isVideoOff={isHuddleVideoOff}
+        isScreenSharing={isHuddleScreenSharing}
+        isHuddleActive={isHuddleActive}
+        joinHuddle={joinHuddle}
+        leaveHuddle={leaveHuddle}
+        toggleAudio={toggleHuddleAudio}
+        toggleVideo={toggleHuddleVideo}
+        toggleScreenShare={toggleHuddleScreenShare}
+        connectionStatus={huddleConnectionStatus}
+      />
+
+      {/* Ongoing V-Chat Alert Popup (shown when board has an ongoing call) */}
+      <OngoingVCAlertModal
+        isOpen={!isHuddleActive && !hasDismissedOngoingVC && huddleActiveParticipants.length > 0}
+        participants={huddleActiveParticipants}
+        onAccept={() => {
+          setIsHuddleOpen(true)
+          joinHuddle()
+          setHasDismissedOngoingVC(true)
+        }}
+        onDecline={() => {
+          setHasDismissedOngoingVC(true)
+        }}
+      />
 
       </div>
 
