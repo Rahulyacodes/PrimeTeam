@@ -1,10 +1,13 @@
 // src/components/layout/BottomDock.jsx
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getBoards, createBoard } from '../../api'
+import { io } from 'socket.io-client'
+import { getBoards, createBoard, getActiveHuddles } from '../../api'
 import { GRADIENT_PRESETS } from './BoardNavbar'
 import BackgroundPickerModal from '../board/BackgroundPickerModal'
 import { formatBackgroundStyle, DEFAULT_BACKGROUND, getNextDefaultBackground } from '../../utils/backgrounds'
+
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'
 
 function BottomDock({ activeTab = 'board', setActiveTab }) {
   const navigate = useNavigate()
@@ -12,6 +15,7 @@ function BottomDock({ activeTab = 'board', setActiveTab }) {
 
   const [boardsModalOpen, setBoardsModalOpen] = useState(false)
   const [boards, setBoards] = useState([])
+  const [activeHuddles, setActiveHuddles] = useState({})
   const [loading, setLoading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newTitle, setNewTitle] = useState('')
@@ -23,6 +27,21 @@ function BottomDock({ activeTab = 'board', setActiveTab }) {
   useEffect(() => {
     if (boardsModalOpen) {
       fetchBoards()
+      getActiveHuddles()
+        .then((res) => {
+          if (res.data) setActiveHuddles(res.data)
+        })
+        .catch((err) => console.error(err))
+
+      const socket = io(SOCKET_URL, { transports: ['websocket', 'polling'] })
+      socket.emit('huddle:get-active-boards')
+      socket.on('huddle:active-boards', (activeMap) => {
+        if (activeMap) setActiveHuddles(activeMap)
+      })
+
+      return () => {
+        socket.disconnect()
+      }
     }
   }, [boardsModalOpen])
 
@@ -180,9 +199,26 @@ function BottomDock({ activeTab = 'board', setActiveTab }) {
                       }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none" />
-                      <div className="flex justify-between items-start relative z-10">
-                        <h4 className="font-bold text-white drop-shadow text-sm">{b.title}</h4>
-                        {b.isStarred && <span className="text-amber-300 text-xs">⭐</span>}
+                      <div className="flex justify-between items-start gap-2 relative z-10">
+                        <h4 className="font-bold text-white drop-shadow text-sm truncate pr-1">{b.title}</h4>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {activeHuddles[b._id]?.count > 0 && (
+                            <span
+                              className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-950/85 border border-emerald-500/60 text-emerald-300 text-[10px] font-bold shadow select-none"
+                              title={`V-Chat Active (${activeHuddles[b._id].count} in call)`}
+                            >
+                              <span className="relative flex h-1.5 w-1.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                              </span>
+                              <svg className="w-3 h-3 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              <span className="text-[10px] font-black text-emerald-200">{activeHuddles[b._id].count}</span>
+                            </span>
+                          )}
+                          {b.isStarred && <span className="text-amber-300 text-xs">⭐</span>}
+                        </div>
                       </div>
                     </div>
                   )

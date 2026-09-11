@@ -56,6 +56,7 @@ export const respondToInvite = (boardId, action) => api.patch(`/boards/${boardId
 export const getInviteInfo = (inviteToken) => api.get(`/boards/invite-info/${inviteToken}`)
 export const joinByLink = (inviteToken) => api.post(`/boards/join-by-link/${inviteToken}`)
 export const leaveBoard = (boardId) => api.post(`/boards/${boardId}/leave`)
+export const getActiveHuddles = () => api.get('/boards/active-huddles')
 
 // ---- search ----
 export const searchAll = (q) => api.get('/search', { params: { q } })

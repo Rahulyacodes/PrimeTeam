@@ -1,13 +1,16 @@
 // src/pages/DashboardPage.jsx
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getBoards, createBoard } from '../api'
+import { io } from 'socket.io-client'
+import { getBoards, createBoard, getActiveHuddles } from '../api'
 import Navbar from '../components/layout/Navbar'
 import BottomDock from '../components/layout/BottomDock'
 import PlannerView from '../components/board/PlannerView'
 import { GRADIENT_PRESETS } from '../components/layout/BoardNavbar'
 import BackgroundPickerModal from '../components/board/BackgroundPickerModal'
 import { formatBackgroundStyle, DEFAULT_BACKGROUND, getNextDefaultBackground } from '../utils/backgrounds'
+
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'
 
 function DashboardPage() {
   const [boards, setBoards] = useState([])
@@ -19,6 +22,9 @@ function DashboardPage() {
   const [showBgModal, setShowBgModal] = useState(false)
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState('')
+
+  // Ongoing V-Chat calls active per board: { [boardId]: { boardId, count, participants } }
+  const [activeHuddles, setActiveHuddles] = useState({})
 
   // Floating dock tab switcher: 'board' or 'planner'
   const [activeTab, setActiveTab] = useState('board')
@@ -35,6 +41,30 @@ function DashboardPage() {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false))
+
+    // 1. Initial fetch of active V-Chat calls across all boards
+    getActiveHuddles()
+      .then((res) => {
+        if (res.data) setActiveHuddles(res.data)
+      })
+      .catch((err) => console.error('Failed to fetch active huddles:', err))
+
+    // 2. Real-time updates via Socket.IO
+    const socket = io(SOCKET_URL, { transports: ['websocket', 'polling'] })
+
+    socket.on('connect', () => {
+      socket.emit('huddle:get-active-boards')
+    })
+
+    socket.on('huddle:active-boards', (activeMap) => {
+      if (activeMap) {
+        setActiveHuddles(activeMap)
+      }
+    })
+
+    return () => {
+      socket.disconnect()
+    }
   }, [])
 
   const handleOpenForm = () => {
@@ -116,17 +146,38 @@ function DashboardPage() {
                     }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none" />
-                    <div className="flex justify-between items-start relative z-10">
-                      <h3 className="font-bold text-white text-base drop-shadow-md group-hover:underline">
+                    <div className="flex justify-between items-start gap-2 relative z-10">
+                      <h3 className="font-bold text-white text-base drop-shadow-md group-hover:underline truncate pr-1">
                         {board.title}
                       </h3>
-                      {board.isStarred && (
-                        <span className="bg-black/40 p-1.5 rounded-lg text-amber-300 backdrop-blur-md border border-amber-500/30 shadow-sm" title="Starred">
-                          <svg className="w-3.5 h-3.5 fill-amber-400 text-amber-400" viewBox="0 0 24 24">
-                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                          </svg>
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {/* Common V-Chat Active / Ongoing Badge: Blinking dot + icon + number of users joined */}
+                        {activeHuddles[board._id]?.count > 0 && (
+                          <span
+                            className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-emerald-950/85 border border-emerald-500/60 text-emerald-300 backdrop-blur-md shadow-lg shadow-emerald-950/50 select-none group-hover:border-emerald-400 group-hover:scale-105 transition-all"
+                            title={`V-Chat Active (${activeHuddles[board._id].count} participant${activeHuddles[board._id].count === 1 ? '' : 's'})`}
+                          >
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <svg className="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-xs font-black text-emerald-200">
+                              {activeHuddles[board._id].count}
+                            </span>
+                          </span>
+                        )}
+
+                        {board.isStarred && (
+                          <span className="bg-black/40 p-1.5 rounded-lg text-amber-300 backdrop-blur-md border border-amber-500/30 shadow-sm" title="Starred">
+                            <svg className="w-3.5 h-3.5 fill-amber-400 text-amber-400" viewBox="0 0 24 24">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-white/90 font-medium relative z-10 drop-shadow">
