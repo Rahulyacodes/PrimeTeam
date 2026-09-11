@@ -230,6 +230,20 @@ router.post('/join-by-link/:inviteToken', authenticate, async (req, res, next) =
     }
 })
 
+//---------------------------------- Get active V-Chat huddles for all boards ------------------------
+// GET /api/boards/active-huddles
+router.get('/active-huddles', authenticate, (req, res) => {
+    try {
+        const registerHuddleHandlers = require('../sockets/huddleHandler')
+        const active = registerHuddleHandlers.getActiveHuddlesSummary
+            ? registerHuddleHandlers.getActiveHuddlesSummary()
+            : {}
+        res.json(active)
+    } catch (err) {
+        res.json({})
+    }
+})
+
 //----------------------------------  Get a single board with its lists and cards ------------------------
 // GET /api/boards/:boardId
 

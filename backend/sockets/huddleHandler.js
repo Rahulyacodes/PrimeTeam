@@ -14,7 +14,36 @@
  */
 const boardHuddles = new Map()
 
-module.exports = function registerHuddleHandlers(io, socket) {
+/**
+ * Returns a summary of all boards with an ongoing/active V-Chat call.
+ * Format: { [boardId]: { boardId, count, participants: [{ socketId, user }] } }
+ */
+function getActiveHuddlesSummary() {
+  const result = {}
+  for (const [boardId, roomParticipants] of boardHuddles.entries()) {
+    if (roomParticipants && roomParticipants.size > 0) {
+      result[boardId] = {
+        boardId,
+        count: roomParticipants.size,
+        participants: Array.from(roomParticipants.values()).map(p => ({
+          socketId: p.socketId,
+          user: p.user
+        }))
+      }
+    }
+  }
+  return result
+}
+
+function registerHuddleHandlers(io, socket) {
+  /**
+   * 0. GET ALL ACTIVE HUDDLE BOARDS
+   * Used by Dashboard "Your Boards" to render active V-Chat badges on board cards.
+   */
+  socket.on('huddle:get-active-boards', () => {
+    socket.emit('huddle:active-boards', getActiveHuddlesSummary())
+  })
+
   /**
    * 1. GET HUDDLE STATUS
    * When a user loads a board, they ask: "Is there an active call happening right now?"
@@ -35,6 +64,7 @@ module.exports = function registerHuddleHandlers(io, socket) {
    * 2. The server sends them `huddle:all-users` (the list of existing callers).
    * 3. The server broadcasts `huddle:user-joined` to everyone already in the call.
    * 4. The server broadcasts updated participant count to the board for the navbar.
+   * 5. The server broadcasts updated active huddle boards to all connected clients.
    */
   socket.on('huddle:join', ({ boardId, user }) => {
     if (!boardId) return
@@ -74,6 +104,9 @@ module.exports = function registerHuddleHandlers(io, socket) {
       boardId,
       participants: Array.from(roomParticipants.values())
     })
+
+    // D. Global broadcast to all connected clients (for "Your Boards" live badge)
+    io.emit('huddle:active-boards', getActiveHuddlesSummary())
   })
 
   /**
@@ -139,6 +172,9 @@ module.exports = function registerHuddleHandlers(io, socket) {
       boardId,
       participants: roomParticipants.size > 0 ? Array.from(roomParticipants.values()) : []
     })
+
+    // Global broadcast to all connected clients (for "Your Boards" live badge)
+    io.emit('huddle:active-boards', getActiveHuddlesSummary())
   }
 
   /**
@@ -153,3 +189,6 @@ module.exports = function registerHuddleHandlers(io, socket) {
    */
   socket.on('disconnect', handleLeaveHuddle)
 }
+
+registerHuddleHandlers.getActiveHuddlesSummary = getActiveHuddlesSummary
+module.exports = registerHuddleHandlers
