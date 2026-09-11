@@ -15,7 +15,21 @@ export const GRADIENT_PRESETS = [
   { name: 'Golden Hour', value: 'linear-gradient(135deg, #F12711 0%, #F5AF19 100%)' },
 ]
 
-function BoardNavbar({ board, onBoardUpdate, filterMemberId, setFilterMemberId, filterText, setFilterText, isChatOpen, setIsChatOpen, unreadCount }) {
+function BoardNavbar({
+  board,
+  onBoardUpdate,
+  filterMemberId,
+  setFilterMemberId,
+  filterText,
+  setFilterText,
+  isChatOpen,
+  setIsChatOpen,
+  unreadCount,
+  isHuddleOpen,
+  setIsHuddleOpen,
+  isHuddleActive,
+  huddleParticipantsCount = 0
+}) {
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -647,6 +661,40 @@ function BoardNavbar({ board, onBoardUpdate, filterMemberId, setFilterMemberId, 
           {unreadCount > 0 && (
             <span className="bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full leading-none animate-pulse">
               {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </button>
+
+        {/* V-Chat Video Call Button */}
+        <button
+          onClick={() => {
+            if (setIsHuddleOpen) {
+              setIsHuddleOpen(!isHuddleOpen)
+            }
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-xs font-semibold cursor-pointer ${
+            isHuddleActive || isHuddleOpen
+              ? 'bg-purple-600/30 border-purple-500/80 text-purple-300 shadow-md shadow-purple-900/30'
+              : huddleParticipantsCount > 0
+              ? 'bg-emerald-950/30 border-emerald-500/60 text-emerald-300 hover:border-emerald-400'
+              : 'bg-[#181824] border-[#2A2A3A] hover:border-purple-500/50 text-gray-200 hover:text-white'
+          }`}
+          title={isHuddleActive ? 'Open V-Chat Window' : huddleParticipantsCount > 0 ? 'Join Ongoing V-Chat' : 'Start V-Chat'}
+        >
+          {huddleParticipantsCount > 0 ? (
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+          ) : (
+            <svg className="w-3.5 h-3.5 text-purple-400 stroke-purple-400 fill-none" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          )}
+          <span>V-Chat</span>
+          {huddleParticipantsCount > 0 && (
+            <span className="bg-emerald-500/30 border border-emerald-400/50 text-emerald-300 text-[10px] font-bold px-1.5 py-0.2 rounded-full leading-none">
+              {huddleParticipantsCount}
             </span>
           )}
         </button>
