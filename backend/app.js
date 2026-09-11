@@ -9,7 +9,8 @@ const app = express()
 
 // global middlewares
 app.use(morgan('dev')) // logs every req to the terminal
-app.use(cors({ origin: 'http://localhost:5173' }))
+const clientOrigin = process.env.CLIENT_URL || 'http://localhost:5173'
+app.use(cors({ origin: clientOrigin, credentials: true }))
 app.use(express.json())   // parses incoming request body as JSON, puts it on req.body
 app.use(express.static('public')) // serves your HTML/CSS/JS frontend
 
