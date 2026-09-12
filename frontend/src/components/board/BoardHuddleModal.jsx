@@ -241,72 +241,136 @@ function VideoTile({
 /**
  * Draggable Floating PIP Tile
  * Can be dragged anywhere across the stage. Clicking triggers view swap.
+ * Optimized with requestAnimationFrame, GPU translate3d, and zero transition-delay during drag.
  */
 function DraggablePipTile({ children, onClick, title = 'Drag to reposition • Click to swap view' }) {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const tileRef = useRef(null)
+  const posRef = useRef({ x: 0, y: 0 })
   const isDragging = useRef(false)
   const dragStart = useRef({ x: 0, y: 0 })
-  const initialPos = useRef({ x: 0, y: 0 })
+  const startPos = useRef({ x: 0, y: 0 })
   const hasMoved = useRef(false)
+  const rafId = useRef(null)
+  const [isDragActive, setIsDragActive] = useState(false)
 
-  const handleMouseDown = (e) => {
+  // Clamp target coordinates inside parent stage boundary
+  const getClampedPos = (targetX, targetY) => {
+    if (!tileRef.current || !tileRef.current.parentElement) {
+      return { x: targetX, y: targetY }
+    }
+    const parentRect = tileRef.current.parentElement.getBoundingClientRect()
+    const tileRect = tileRef.current.getBoundingClientRect()
+
+    const margin = 16
+    const minX = -(parentRect.width - tileRect.width - margin)
+    const maxX = margin
+    const minY = -(parentRect.height - tileRect.height - margin)
+    const maxY = margin
+
+    return {
+      x: Math.min(Math.max(targetX, minX), maxX),
+      y: Math.min(Math.max(targetY, minY), maxY)
+    }
+  }
+
+  const handleStart = (clientX, clientY) => {
     isDragging.current = true
     hasMoved.current = false
-    dragStart.current = { x: e.clientX, y: e.clientY }
-    initialPos.current = { ...position }
+    dragStart.current = { x: clientX, y: clientY }
+    startPos.current = { ...posRef.current }
+    setIsDragActive(true)
 
-    const handleMouseMove = (moveEvent) => {
-      if (!isDragging.current) return
-      const dx = moveEvent.clientX - dragStart.current.x
-      const dy = moveEvent.clientY - dragStart.current.y
-      if (Math.hypot(dx, dy) > 5) {
-        hasMoved.current = true
+    if (tileRef.current) {
+      tileRef.current.style.willChange = 'transform'
+      tileRef.current.style.transition = 'none'
+    }
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'grabbing'
+  }
+
+  const handleMove = (clientX, clientY) => {
+    if (!isDragging.current) return
+
+    const dx = clientX - dragStart.current.x
+    const dy = clientY - dragStart.current.y
+
+    if (!hasMoved.current && Math.hypot(dx, dy) > 4) {
+      hasMoved.current = true
+    }
+
+    const rawX = startPos.current.x + dx
+    const rawY = startPos.current.y + dy
+    const clamped = getClampedPos(rawX, rawY)
+
+    posRef.current = clamped
+
+    if (rafId.current) cancelAnimationFrame(rafId.current)
+    rafId.current = requestAnimationFrame(() => {
+      if (tileRef.current) {
+        tileRef.current.style.transform = `translate3d(${clamped.x}px, ${clamped.y}px, 0)`
       }
-      setPosition({
-        x: initialPos.current.x + dx,
-        y: initialPos.current.y + dy
-      })
+    })
+  }
+
+  const handleEnd = () => {
+    if (!isDragging.current) return
+    isDragging.current = false
+    setIsDragActive(false)
+
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current)
+      rafId.current = null
     }
 
-    const handleMouseUp = () => {
-      isDragging.current = false
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', handleMouseUp)
+    if (tileRef.current) {
+      tileRef.current.style.willChange = 'auto'
+      tileRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`
+      tileRef.current.style.transition = ''
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', handleMouseUp)
+    document.body.style.userSelect = ''
+    document.body.style.cursor = ''
+  }
+
+  const handleMouseDown = (e) => {
+    if (e.button !== 0) return // Left click only
+    e.preventDefault()
+    handleStart(e.clientX, e.clientY)
+
+    const onMouseMove = (moveEvent) => {
+      handleMove(moveEvent.clientX, moveEvent.clientY)
+    }
+
+    const onMouseUp = () => {
+      handleEnd()
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
+    window.addEventListener('mouseup', onMouseUp)
   }
 
   const handleTouchStart = (e) => {
     const touch = e.touches[0]
-    isDragging.current = true
-    hasMoved.current = false
-    dragStart.current = { x: touch.clientX, y: touch.clientY }
-    initialPos.current = { ...position }
+    if (!touch) return
+    handleStart(touch.clientX, touch.clientY)
 
-    const handleTouchMove = (moveEvent) => {
-      if (!isDragging.current) return
-      const touchMove = moveEvent.touches[0]
-      const dx = touchMove.clientX - dragStart.current.x
-      const dy = touchMove.clientY - dragStart.current.y
-      if (Math.hypot(dx, dy) > 5) {
-        hasMoved.current = true
+    const onTouchMove = (moveEvent) => {
+      const t = moveEvent.touches[0]
+      if (t) {
+        handleMove(t.clientX, t.clientY)
       }
-      setPosition({
-        x: initialPos.current.x + dx,
-        y: initialPos.current.y + dy
-      })
     }
 
-    const handleTouchEnd = () => {
-      isDragging.current = false
-      window.removeEventListener('touchmove', handleTouchMove)
-      window.removeEventListener('touchend', handleTouchEnd)
+    const onTouchEnd = () => {
+      handleEnd()
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend', onTouchEnd)
     }
 
-    window.addEventListener('touchmove', handleTouchMove)
-    window.addEventListener('touchend', handleTouchEnd)
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchend', onTouchEnd)
   }
 
   const handleClick = (e) => {
@@ -315,20 +379,37 @@ function DraggablePipTile({ children, onClick, title = 'Drag to reposition • C
     }
   }
 
+  useEffect(() => {
+    return () => {
+      if (rafId.current) cancelAnimationFrame(rafId.current)
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+    }
+  }, [])
+
   return (
     <div
+      ref={tileRef}
       style={{
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`
+        transform: `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`,
+        touchAction: 'none'
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onClick={handleClick}
-      className="absolute bottom-5 right-5 z-20 w-48 sm:w-60 aspect-video rounded-2xl overflow-hidden shadow-2xl border-2 border-purple-500/70 hover:border-purple-400 cursor-grab active:cursor-grabbing transition-all hover:shadow-purple-950/60 group animate-scaleUp"
+      className={`absolute bottom-5 right-5 z-20 w-48 sm:w-60 aspect-video rounded-2xl overflow-hidden shadow-2xl border-2 border-purple-500/70 hover:border-purple-400 select-none group ${
+        isDragActive
+          ? 'cursor-grabbing shadow-purple-950/80 scale-[1.02]'
+          : 'cursor-grab hover:shadow-purple-950/60 transition-[border-color,box-shadow,transform] duration-200'
+      }`}
       title={title}
     >
-      {children}
+      <div className={isDragActive ? 'pointer-events-none w-full h-full' : 'w-full h-full'}>
+        {children}
+      </div>
+
       {/* Subtle Swap Hint on Hover */}
-      {onClick && (
+      {onClick && !isDragActive && (
         <div className="absolute inset-0 bg-purple-950/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
           <span className="px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md text-[10px] font-bold text-white flex items-center gap-1.5 border border-purple-500/40 shadow">
             <svg className="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
