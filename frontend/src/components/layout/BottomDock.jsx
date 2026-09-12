@@ -39,8 +39,17 @@ function BottomDock({ activeTab = 'board', setActiveTab }) {
         if (activeMap) setActiveHuddles(activeMap)
       })
 
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          setBoardsModalOpen(false)
+          setShowCreateForm(false)
+        }
+      }
+      window.addEventListener('keydown', handleKeyDown)
+
       return () => {
         socket.disconnect()
+        window.removeEventListener('keydown', handleKeyDown)
       }
     }
   }, [boardsModalOpen])
@@ -156,8 +165,17 @@ function BottomDock({ activeTab = 'board', setActiveTab }) {
 
       {/* Switch Boards Modal */}
       {boardsModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1C1C24] border border-[#2A2A35] rounded-2xl w-full max-w-xl p-6 shadow-2xl text-white">
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setBoardsModalOpen(false)
+            setShowCreateForm(false)
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#1C1C24] border border-[#2A2A35] rounded-2xl w-full max-w-xl p-6 shadow-2xl text-white"
+          >
             <div className="flex items-center justify-between mb-6 border-b border-[#2A2A35] pb-4">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
