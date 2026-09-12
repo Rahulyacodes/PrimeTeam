@@ -298,6 +298,9 @@ function BoardPage() {
   }
 
   const handleCardDragOver = (e, cardId) => {
+    // If a list is currently being dragged, do not intercept card dragover (let it bubble to list)
+    if (draggedListId && !draggedCard) return
+
     e.preventDefault()
     e.stopPropagation()
     e.dataTransfer.dropEffect = 'move'
@@ -319,11 +322,6 @@ function BoardPage() {
   }
 
   const handleCardDrop = (e, targetCard, targetListId, targetCardIndex) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragOverListId(null)
-    setDragOverCardId(null)
-
     const dataRaw = e.dataTransfer.getData('text/plain')
     let parsedData = {}
     if (dataRaw) {
@@ -331,6 +329,17 @@ function BoardPage() {
         parsedData = JSON.parse(dataRaw)
       } catch (err) {}
     }
+
+    // If a LIST was dropped onto a card, forward directly to list drop handler
+    if (parsedData.type === 'list' || (draggedListId && !draggedCard)) {
+      handleDrop(e, targetListId)
+      return
+    }
+
+    e.preventDefault()
+    e.stopPropagation()
+    setDragOverListId(null)
+    setDragOverCardId(null)
 
     const cardId = draggedCard?.cardId || parsedData.cardId
     const sourceListId = draggedCard?.sourceListId || parsedData.sourceListId
@@ -401,21 +410,45 @@ function BoardPage() {
       } catch (err) {}
     }
 
-    // Handle List Reordering Drop
+    // Handle List Reordering Drop (Fast & Optimistic)
     if (parsedData.type === 'list' || (draggedListId && !draggedCard)) {
       const activeListId = parsedData.listId || draggedListId
+      setDraggedListId(null)
+
       if (!activeListId || activeListId === targetListId) {
-        setDraggedListId(null)
         return
       }
+
       const lists = board?.lists || []
+      const oldIndex = lists.findIndex((l) => l._id === activeListId)
       const targetIndex = lists.findIndex((l) => l._id === targetListId)
-      if (targetIndex !== -1) {
-        updateList(activeListId, { position: targetIndex + 1 })
-          .then(() => fetchBoardData())
-          .catch((err) => console.error('Failed to reorder list:', err))
+
+      if (oldIndex === -1 || targetIndex === -1 || oldIndex === targetIndex) {
+        return
       }
-      setDraggedListId(null)
+
+      // 1. Instant Optimistic State Update (0ms delay)
+      setBoard((prevBoard) => {
+        if (!prevBoard) return prevBoard
+        const prevLists = [...prevBoard.lists]
+        const fromIdx = prevLists.findIndex((l) => l._id === activeListId)
+        const toIdx = prevLists.findIndex((l) => l._id === targetListId)
+        if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return prevBoard
+
+        const [movedList] = prevLists.splice(fromIdx, 1)
+        prevLists.splice(toIdx, 0, movedList)
+
+        return {
+          ...prevBoard,
+          lists: prevLists.map((l, idx) => ({ ...l, position: idx + 1 }))
+        }
+      })
+
+      // 2. Persist in background (rollback only on network failure)
+      updateList(activeListId, { position: targetIndex + 1 }).catch((err) => {
+        console.error('Failed to reorder list:', err)
+        fetchBoardData()
+      })
       return
     }
 
@@ -601,6 +634,7 @@ function BoardPage() {
 
               const cardCount = filteredCards.length
               const isDragOver = dragOverListId === list._id
+              const isBeingDraggedList = draggedListId === list._id
 
               return (
                 <div
@@ -610,14 +644,23 @@ function BoardPage() {
                   onDragOver={(e) => !isViewer && handleDragOver(e, list._id)}
                   onDragLeave={(e) => !isViewer && handleDragLeave(e, list._id)}
                   onDrop={(e) => !isViewer && handleDrop(e, list._id)}
-                  className={`bg-[#141419]/85 backdrop-blur-xl border rounded-2xl p-3.5 w-72 shrink-0 flex flex-col shadow-2xl transition-all ${
-                    isDragOver
+                  onDragEnd={() => {
+                    setDraggedListId(null)
+                    setDragOverListId(null)
+                    setDragOverCardId(null)
+                  }}
+                  className={`bg-[#141419]/85 backdrop-blur-xl border rounded-2xl p-3.5 w-72 shrink-0 flex flex-col shadow-2xl transition-all duration-150 ${
+                    isBeingDraggedList
+                      ? 'opacity-35 scale-[0.98] border-dashed border-purple-400'
+                      : isDragOver && draggedListId && draggedListId !== list._id
+                      ? 'border-purple-400 ring-2 ring-purple-500/60 bg-[#1A1A26] scale-[1.01]'
+                      : isDragOver
                       ? 'border-purple-500 ring-2 ring-purple-500/50 bg-[#1A1A26]/95 scale-[1.01]'
                       : 'border-white/10'
                   }`}
                 >
                   {/* List Header */}
-                  <div className="flex items-center justify-between px-1 py-1 mb-2 text-white">
+                  <div className="flex items-center justify-between px-1 py-1 mb-2 text-white cursor-grab active:cursor-grabbing select-none">
                     {editingListId === list._id ? (
                       <input
                         type="text"
