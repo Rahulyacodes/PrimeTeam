@@ -12,15 +12,46 @@ export const GRADIENT_PRESETS = [
   { name: 'Golden Hour', value: 'linear-gradient(135deg, #F12711 0%, #F5AF19 100%)' },
 ]
 
-// Dynamically auto-discover image backgrounds placed in /public/Backgrounds_PrimeTeam/
+// Static background image manifest — files live in /public/Backgrounds_PrimeTeam/
+// These are served as static assets by Vite (not imported as JS modules).
+// To add a new background: drop the file in /public/Backgrounds_PrimeTeam/<Category>/ and add an entry below.
 export const DEFAULT_BACKGROUND = 'url("/Backgrounds_PrimeTeam/City/jahanzeb-ahsan-UZGKXvsmuJA-unsplash.jpg")'
-const modules = import.meta.glob(
-  [
-    '/public/Backgrounds_PrimeTeam/**/*.{jpg,jpeg,png,webp,svg,JPG,JPEG,PNG,WEBP,SVG}',
-    '../public/Backgrounds_PrimeTeam/**/*.{jpg,jpeg,png,webp,svg,JPG,JPEG,PNG,WEBP,SVG}'
+
+const BACKGROUND_FILES = {
+  Cars: [
+    'Black beast_.jpeg',
+    'Red Raven.jpeg',
+    'porsche .jpg',
+    'porsche.jpg',
   ],
-  { eager: true }
-)
+  City: [
+    'jahanzeb-ahsan-UZGKXvsmuJA-unsplash.jpg',
+    'joseph-barrientos-Ji_G7Bu1MoM-unsplash.jpg',
+    'konstantin-artyushkevich-2cJD8qHUMRo-unsplash.jpg',
+    'marc-olivier-jodoin-MJv31qXqSOU-unsplash.jpg',
+    'mathias-reding-Dbrk165tSgc-unsplash.jpg',
+    'meduana-PdnseHuDFZU-unsplash.jpg',
+    'noukka-signe-5yqm_rmRzBQ-unsplash.jpg',
+    '_ (1).jpeg',
+  ],
+  Cosmos: [
+    '20260330_224737.jpg.jpeg',
+    'Black hole.jpeg',
+    'Earth_ (1).jpeg',
+    'Interstellar wallpaper 4k.jpeg',
+    '_.jpeg',
+    'star clusters_ (1).jpeg',
+  ],
+}
+
+// Build modules-like map from the static manifest
+const modules = {}
+Object.entries(BACKGROUND_FILES).forEach(([category, files]) => {
+  files.forEach((file) => {
+    const key = `/public/Backgrounds_PrimeTeam/${category}/${file}`
+    modules[key] = true
+  })
+})
 
 export function getAutoDiscoveredBackgrounds() {
   const categoriesMap = {}
