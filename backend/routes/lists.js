@@ -84,7 +84,27 @@ router.patch('/:listId', authenticate, authorizeList, authorizeBoardRole(['owner
         }
 
         if (position !== undefined && !isNaN(Number(position))) {
-            updates.position = Math.max(1, Number(position))
+            const targetPos = Math.max(1, Number(position))
+            req.list.position = targetPos
+            if (updates.title) {
+                req.list.title = updates.title
+            }
+            await req.list.save()
+
+            // Re-normalize list positions in the board sequentially
+            const allLists = await List.find({ boardId: req.list.boardId }).sort({ position: 1, updatedAt: -1 })
+            let posCounter = 1
+            for (const l of allLists) {
+                if (l._id.toString() === req.list._id.toString()) continue
+                if (posCounter === targetPos) posCounter++
+                if (l.position !== posCounter) {
+                    l.position = posCounter
+                    await l.save()
+                }
+                posCounter++
+            }
+
+            return res.json(req.list)
         }
 
         const updatedList = await List.findByIdAndUpdate(
@@ -92,17 +112,6 @@ router.patch('/:listId', authenticate, authorizeList, authorizeBoardRole(['owner
             updates,
             { new: true }
         )
-
-        // Re-normalize list positions in the board sequentially if position was changed
-        if (position !== undefined) {
-            const allLists = await List.find({ boardId: req.list.boardId }).sort({ position: 1, updatedAt: -1 })
-            for (let i = 0; i < allLists.length; i++) {
-                if (allLists[i].position !== i + 1) {
-                    allLists[i].position = i + 1
-                    await allLists[i].save()
-                }
-            }
-        }
 
         res.json(updatedList)
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/layout/Navbar'
 import { useAuth } from '../context/AuthContext'
 import { updateProfile, changePassword, requestEmailChangeOtp, verifyEmailChangeOtp } from '../api'
@@ -12,10 +12,25 @@ function SettingsPage() {
   // Profile Form State
   const [name, setName] = useState(user?.name || '')
   const [username, setUsername] = useState(user?.username || '')
-  const [selectedAvatar, setSelectedAvatar] = useState(user?.avatar || 'Gizmo')
-  const [customSeed, setCustomSeed] = useState('')
+  const [selectedAvatar, setSelectedAvatar] = useState(user?.avatar || '')
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileMsg, setProfileMsg] = useState({ type: '', text: '' })
+
+  // Avatar Edit State (Menu & Modal)
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
+  const [showAvatarModal, setShowAvatarModal] = useState(false)
+  const [modalAvatar, setModalAvatar] = useState(user?.avatar || '')
+  const [avatarActionLoading, setAvatarActionLoading] = useState(false)
+  const avatarMenuRef = useRef(null)
+
+  // Sync user state if updated externally
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '')
+      setUsername(user.username || '')
+      setSelectedAvatar(user.avatar || '')
+    }
+  }, [user])
 
   // Email Change State (OTP Verified)
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false)
@@ -33,7 +48,30 @@ function SettingsPage() {
   const [securityLoading, setSecurityLoading] = useState(false)
   const [securityMsg, setSecurityMsg] = useState({ type: '', text: '' })
 
-  const currentAvatarUri = getDiceBearAvatar(selectedAvatar || user?.username || 'Gizmo')
+  const currentAvatarUri = getDiceBearAvatar(selectedAvatar)
+
+  // Close avatar dropdown on outside click or Escape key
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target)) {
+        setAvatarMenuOpen(false)
+      }
+    }
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setAvatarMenuOpen(false)
+        setShowAvatarModal(false)
+      }
+    }
+    if (avatarMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [avatarMenuOpen])
 
   useEffect(() => {
     let timer
@@ -150,6 +188,55 @@ function SettingsPage() {
     }
   }
 
+  // Remove custom avatar -> reset to no profile avatar (placeholder icon)
+  const handleRemoveAvatar = async () => {
+    setProfileMsg({ type: '', text: '' })
+    setAvatarActionLoading(true)
+    try {
+      const res = await updateProfile({
+        name: name.trim(),
+        username: username.trim(),
+        avatar: ''
+      })
+      updateUser(res.data.user)
+      setSelectedAvatar('')
+      setModalAvatar('')
+      setShowAvatarModal(false)
+      setProfileMsg({ type: 'success', text: 'Avatar removed successfully!' })
+    } catch (err) {
+      setProfileMsg({
+        type: 'error',
+        text: err.response?.data?.error || 'Failed to remove avatar. Please try again.'
+      })
+    } finally {
+      setAvatarActionLoading(false)
+    }
+  }
+
+  // Save selected avatar from Change Avatar Modal
+  const handleSaveAvatar = async (avatarToSave) => {
+    setProfileMsg({ type: '', text: '' })
+    setAvatarActionLoading(true)
+    try {
+      const res = await updateProfile({
+        name: name.trim(),
+        username: username.trim(),
+        avatar: avatarToSave
+      })
+      updateUser(res.data.user)
+      setSelectedAvatar(avatarToSave)
+      setShowAvatarModal(false)
+      setProfileMsg({ type: 'success', text: 'Profile avatar updated successfully!' })
+    } catch (err) {
+      setProfileMsg({
+        type: 'error',
+        text: err.response?.data?.error || 'Failed to update avatar. Please try again.'
+      })
+    } finally {
+      setAvatarActionLoading(false)
+    }
+  }
+
   // Handle Password Change Submit
   const handleSecuritySubmit = async (e) => {
     e.preventDefault()
@@ -196,15 +283,103 @@ function SettingsPage() {
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
         
         {/* Banner Header */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-[#171722] border border-[#2A2A38] p-6 mb-8 shadow-xl">
+        <div className="relative rounded-2xl bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-[#171722] border border-[#2A2A38] p-6 mb-8 shadow-xl">
+          <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl" />
+          </div>
+
           <div className="flex flex-col sm:flex-row items-center gap-5 relative z-10">
-            {/* DiceBear Avatar Preview */}
-            <div className="w-20 h-20 rounded-2xl bg-[#13131A] border-2 border-purple-500/40 p-1 flex items-center justify-center shadow-lg shadow-purple-900/40 shrink-0">
-              <img
-                src={currentAvatarUri}
-                alt="Selected Avatar"
-                className="w-full h-full object-contain rounded-xl"
-              />
+            {/* Interactive Avatar with Edit Pencil */}
+            <div className="relative" ref={avatarMenuRef}>
+              <div
+                onClick={() => {
+                  setModalAvatar(selectedAvatar || 'Gizmo')
+                  setAvatarMenuOpen(prev => !prev)
+                }}
+                className="group relative w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-[#13131A] border-2 border-purple-500/50 p-1 flex items-center justify-center shadow-lg shadow-purple-900/40 shrink-0 cursor-pointer transition-all duration-200 hover:border-purple-400 hover:shadow-purple-500/30 select-none"
+                title="Click to change or remove avatar"
+              >
+                {selectedAvatar ? (
+                  <img
+                    src={currentAvatarUri}
+                    alt="Profile Avatar"
+                    className="w-full h-full object-contain rounded-xl transition-transform duration-200 group-hover:scale-95"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-xl bg-[#181822] flex items-center justify-center text-gray-400 group-hover:text-gray-300 transition-colors">
+                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </div>
+                )}
+
+                {/* Subtle dark overlay on hover */}
+                <div className="absolute inset-1 rounded-xl bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-0.5 text-white">
+                  <svg className="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                  </svg>
+                  <span className="text-[10px] font-semibold text-purple-200">{selectedAvatar ? 'Edit' : 'Add'}</span>
+                </div>
+
+                {/* Edit Pencil Icon Badge */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setModalAvatar(selectedAvatar || 'Gizmo')
+                    setAvatarMenuOpen(prev => !prev)
+                  }}
+                  className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shadow-lg border-2 border-[#13131A] transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer z-10"
+                  title={selectedAvatar ? "Edit Avatar" : "Add Avatar"}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Action Dropdown Menu (Change / Remove) */}
+              {avatarMenuOpen && (
+                <div className="absolute left-0 top-[calc(100%+8px)] w-48 bg-[#181822] border border-[#2E2E3E] rounded-xl shadow-2xl py-1.5 z-30 animate-fadeIn divide-y divide-[#262636]">
+                  <div className="px-3 py-1.5">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Avatar Options</p>
+                  </div>
+
+                  <div className="py-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAvatarMenuOpen(false)
+                        setModalAvatar(selectedAvatar || 'Gizmo')
+                        setShowAvatarModal(true)
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs font-medium text-gray-200 hover:text-white hover:bg-purple-600/20 flex items-center gap-2.5 transition-colors cursor-pointer"
+                    >
+                      <svg className="w-4 h-4 text-purple-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                      </svg>
+                      <span>{selectedAvatar ? 'Change Avatar' : 'Choose Avatar'}</span>
+                    </button>
+
+                    {selectedAvatar && (
+                      <button
+                        type="button"
+                        disabled={avatarActionLoading}
+                        onClick={() => {
+                          setAvatarMenuOpen(false)
+                          handleRemoveAvatar()
+                        }}
+                        className="w-full px-3 py-2 text-left text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        <span>Remove Avatar</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="text-center sm:text-left flex-1">
@@ -216,8 +391,6 @@ function SettingsPage() {
               </p>
             </div>
           </div>
-
-          <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
         </div>
 
         {/* Tab Selection */}
@@ -261,7 +434,7 @@ function SettingsPage() {
               <span>Profile Details</span>
             </h2>
             <p className="text-xs text-gray-400 mb-6">
-              Select your profile avatar, display name, and username handle.
+              Manage your display name, username handle and email.
             </p>
 
             {profileMsg.text && (
@@ -286,50 +459,6 @@ function SettingsPage() {
             )}
 
             <form onSubmit={handleProfileSubmit} className="space-y-6">
-              
-              {/* Preset Robot Avatar Selection Grid */}
-              <div>
-                <div className="mb-2.5">
-                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Select Profile Avatar
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-                  {BOT_SEEDS.map((bot) => {
-                    const isSelected = selectedAvatar === bot.seed
-                    const avatarUri = getDiceBearAvatar(bot.seed)
-                    return (
-                      <button
-                        key={bot.id}
-                        type="button"
-                        onClick={() => setSelectedAvatar(bot.seed)}
-                        className={`group relative flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all cursor-pointer ${
-                          isSelected
-                            ? 'border-purple-500 bg-purple-500/15 scale-105 shadow-lg shadow-purple-500/30'
-                            : 'border-[#2A2A38] bg-[#0F0F14] hover:border-gray-500 hover:scale-102'
-                        }`}
-                        title={bot.name}
-                      >
-                        <div className="w-12 h-12 rounded-lg bg-[#13131A] p-0.5 flex items-center justify-center overflow-hidden">
-                          <img src={avatarUri} alt={bot.name} className="w-full h-full object-contain" />
-                        </div>
-                        <span className="text-[10px] text-gray-400 mt-1 font-medium group-hover:text-white truncate max-w-full">
-                          {bot.name}
-                        </span>
-                        {isSelected && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow">
-                            <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
               <div>
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                   Display Name
@@ -530,6 +659,107 @@ function SettingsPage() {
                   </button>
                 </form>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Change Profile Avatar Modal */}
+        {showAvatarModal && (
+          <div
+            onClick={() => setShowAvatarModal(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#1C1C24] border border-[#2A2A38] rounded-2xl w-full max-w-md p-6 shadow-2xl text-white flex flex-col gap-5 relative"
+            >
+              <button
+                type="button"
+                onClick={() => setShowAvatarModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-400 shrink-0">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-white">Choose Profile Avatar</h3>
+                  <p className="text-xs text-gray-400">Select an avatar character for your profile</p>
+                </div>
+              </div>
+
+              {/* Available Avatars Grid */}
+              <div>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-3">
+                  Available Avatars
+                </label>
+                <div className="grid grid-cols-4 gap-3">
+                  {BOT_SEEDS.map((bot) => {
+                    const isSelected = modalAvatar === bot.seed
+                    const avatarUri = getDiceBearAvatar(bot.seed)
+                    return (
+                      <button
+                        key={bot.id}
+                        type="button"
+                        onClick={() => setModalAvatar(bot.seed)}
+                        className={`group relative flex flex-col items-center justify-center p-2.5 rounded-xl border-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? 'border-purple-500 bg-purple-500/15 scale-105 shadow-md shadow-purple-500/30'
+                            : 'border-[#2A2A38] bg-[#0F0F14] hover:border-gray-500 hover:scale-102'
+                        }`}
+                        title={bot.name}
+                      >
+                        <div className="w-12 h-12 rounded-lg bg-[#13131A] p-0.5 flex items-center justify-center overflow-hidden">
+                          <img src={avatarUri} alt={bot.name} className="w-full h-full object-contain" />
+                        </div>
+                        <span className="text-[11px] text-gray-400 mt-1.5 font-medium group-hover:text-white truncate max-w-full">
+                          {bot.name}
+                        </span>
+                        {isSelected && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow">
+                            <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                          </div>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex items-center justify-between pt-3 border-t border-[#2A2A38]">
+                {selectedAvatar ? (
+                  <button
+                    type="button"
+                    disabled={avatarActionLoading}
+                    onClick={handleRemoveAvatar}
+                    className="text-xs font-semibold text-red-400 hover:text-red-300 hover:underline flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <svg className="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                    <span>Remove Avatar</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+
+                <button
+                  type="button"
+                  disabled={avatarActionLoading || !modalAvatar}
+                  onClick={() => handleSaveAvatar(modalAvatar)}
+                  className="px-5 py-2 rounded-xl bg-transparent border-2 border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white font-semibold text-xs transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {avatarActionLoading ? 'Saving...' : 'Save Avatar'}
+                </button>
+              </div>
             </div>
           </div>
         )}

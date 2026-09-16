@@ -13,9 +13,20 @@ export const BOT_SEEDS = [
   { id: 'bot-8', seed: 'Byte', name: 'Byte' }
 ]
 
-// Generate DiceBear Bottts Neutral SVG Data URI string
-export const getDiceBearAvatar = (seedStr = 'User') => {
-  if (!seedStr) seedStr = 'User'
+// Default placeholder silhouette SVG data URI when user has no avatar or removes it
+export const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#1C1C26"/>
+  <circle cx="32" cy="24" r="11" fill="#6B7280"/>
+  <path d="M14 52C14 42 21 37 32 37C43 37 50 42 50 52" fill="#6B7280"/>
+</svg>
+`)}`
+
+// Generate DiceBear Bottts Neutral SVG Data URI string, or return placeholder
+export const getDiceBearAvatar = (seedStr) => {
+  if (!seedStr || seedStr === 'none' || seedStr === 'null' || seedStr === 'undefined') {
+    return DEFAULT_AVATAR_PLACEHOLDER
+  }
   if (typeof seedStr === 'string' && (seedStr.startsWith('http://') || seedStr.startsWith('https://') || seedStr.startsWith('data:image'))) {
     return seedStr
   }
@@ -27,6 +38,7 @@ export const getDiceBearAvatar = (seedStr = 'User') => {
     return avatar.toDataUri()
   } catch (err) {
     console.error('Error generating DiceBear avatar:', err)
-    return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="%238B5CF6"/><text x="16" y="21" font-size="14" font-weight="bold" text-anchor="middle" fill="white">U</text></svg>'
+    return DEFAULT_AVATAR_PLACEHOLDER
   }
 }
+

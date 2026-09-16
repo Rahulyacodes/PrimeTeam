@@ -431,7 +431,7 @@ router.put('/profile', authenticate, async (req, res, next) => {
         }
 
         if (name !== undefined) user.name = name.trim()
-        if (avatar !== undefined) user.avatar = avatar.trim()
+        if (avatar !== undefined) user.avatar = (avatar && typeof avatar === 'string') ? avatar.trim() : ''
 
         await user.save()
 
