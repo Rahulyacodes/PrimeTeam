@@ -11,7 +11,6 @@ function Navbar({ onSearch }) {
 
   const [profileOpen, setProfileOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
-  const [announceOpen, setAnnounceOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
   const [invitesOpen, setInvitesOpen] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
@@ -97,7 +96,6 @@ function Navbar({ onSearch }) {
 
   const profileRef = useRef(null)
   const helpRef = useRef(null)
-  const announceRef = useRef(null)
   const notifRef = useRef(null)
   const invitesRef = useRef(null)
   const searchRef = useRef(null)
@@ -137,9 +135,6 @@ function Navbar({ onSearch }) {
       }
       if (helpRef.current && !helpRef.current.contains(e.target)) {
         setHelpOpen(false)
-      }
-      if (announceRef.current && !announceRef.current.contains(e.target)) {
-        setAnnounceOpen(false)
       }
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setNotifOpen(false)
@@ -373,31 +368,7 @@ function Navbar({ onSearch }) {
           )}
         </div>
 
-        {/* Announcement Icon */}
-        <div className="relative" ref={announceRef}>
-          <button
-            onClick={() => setAnnounceOpen(!announceOpen)}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors relative"
-            title="Announcements"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.684A1.761 1.761 0 014 12c0-.972.784-1.761 1.76-1.761h2.825l3.417-6.15A1.76 1.76 0 0115 5.882v12.236a1.76 1.76 0 01-2.998 1.284l-3.417-6.15H5.436z" />
-            </svg>
-            <span className="w-2 h-2 bg-purple-500 rounded-full absolute top-1 right-1" />
-          </button>
 
-          {announceOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-[#1C1C24] border border-[#2A2A35] rounded-xl p-3 shadow-2xl z-50 text-xs text-gray-200">
-              <h4 className="font-bold text-sm mb-1 text-white flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.684A1.761 1.761 0 014 12c0-.972.784-1.761 1.76-1.761h2.825l3.417-6.15A1.76 1.76 0 0115 5.882v12.236a1.76 1.76 0 01-2.998 1.284l-3.417-6.15H5.436z" />
-                </svg>
-                <span>Announcements</span>
-              </h4>
-              <p className="text-gray-400">New features and dashboard enhancements are live!</p>
-            </div>
-          )}
-        </div>
 
         {/* Notifications Icon */}
         <div className="relative" ref={notifRef}>
