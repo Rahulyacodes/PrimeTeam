@@ -131,7 +131,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md p-6 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/80 relative text-text-primary">
+      <div className="w-full max-w-md p-6 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/80 relative text-text-primary animate-auth-card">
         
         {/* Close Button */}
         <button
