@@ -389,7 +389,7 @@ function LandingPage() {
 
       {/* 3. Left-Aligned Hero Section */}
       <main className="flex-1 flex flex-col items-center relative z-10">
-        <section className="w-full max-w-5xl mx-auto px-6 sm:px-10 pt-16 pb-16 text-left">
+        <section className="w-full max-w-5xl mx-auto px-6 sm:px-10 pt-16 pb-12 text-left">
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.12] tracking-[-0.03em] text-white mb-6 text-left">
             It's just a board.<br />
@@ -610,8 +610,13 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* Section Divider: Board Preview -> V-Chat */}
+        <div className="w-full max-w-5xl mx-auto px-6 sm:px-10 my-16 sm:my-20">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+        </div>
+
         {/* 5. Built-in V-Chat & Real-time Messaging Section */}
-        <section className="w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 mt-16 mb-24">
+        <section className="w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8">
 
           {/* Section Heading & Subtitle */}
           <div className="mb-12 text-center flex flex-col items-center">
@@ -620,7 +625,7 @@ function LandingPage() {
             </p>
 
             <h2 className="text-[34px] sm:text-[46px] font-bold tracking-[-0.03em] leading-[1.12] text-white mb-4 max-w-3xl mx-auto text-center">
-              Video call, screen-share, and ship.<br />
+              Video chat, screen-share, and ship.<br />
               <span className="text-[#7C6FF7]">Right inside your board.</span>
             </h2>
 
@@ -682,13 +687,6 @@ function LandingPage() {
                   {/* Top Bar inside Screen Share Window - Clickable & Cycling Tabs */}
                   <div className="bg-[#181826] border-b border-white/10 px-3 py-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1.5 rounded-md bg-purple-600/90 backdrop-blur-md font-bold text-white text-[11px] px-2 py-0.5 shadow shrink-0">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Screen · Sarah Lin
-                      </span>
-
                       {/* File Tabs in IDE: Switchable automatically and clickable */}
                       <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
                         <button
@@ -1572,8 +1570,13 @@ function LandingPage() {
 
         </section>
 
+        {/* Section Divider: V-Chat -> Features */}
+        <div className="w-full max-w-5xl mx-auto px-6 sm:px-10 my-16 sm:my-20">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+        </div>
+
         {/* Features — transparent boxes with clean borders */}
-        <section className="max-w-6xl mx-auto px-6 sm:px-10 pt-2 pb-20">
+        <section className="max-w-6xl mx-auto px-6 sm:px-10 pb-20">
 
           {/* Section label — used meaningfully, not as ALL-CAPS decoration */}
           <p className="text-[#7C6FF7] text-sm font-medium mb-3">What you get</p>
@@ -1708,11 +1711,13 @@ function LandingPage() {
         </section>
       </main>
 
-      {/* 6. Divider Line */}
-      <div className="h-[0.5px] bg-[#2A2A35] max-w-5xl mx-auto w-full px-6 sm:px-10 relative z-10" />
+      {/* Section Divider: Features -> Footer */}
+      <div className="w-full max-w-5xl mx-auto px-6 sm:px-10 my-10 sm:my-14 relative z-10">
+        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+      </div>
 
       {/* 7. Minimal Footer */}
-      <footer className="w-full max-w-5xl mx-auto px-6 sm:px-10 py-8 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-[#8B8B9E] relative z-10">
+      <footer className="w-full max-w-5xl mx-auto px-6 sm:px-10 py-6 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-[#8B8B9E] relative z-10">
 
         {/* App Name & Logo */}
         <div className="flex items-center gap-2 font-bold text-white tracking-tight">
