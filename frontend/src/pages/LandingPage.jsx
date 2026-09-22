@@ -16,6 +16,60 @@ function LandingPage() {
   const [isMoving, setIsMoving] = useState(false)
   const [isFlying, setIsFlying] = useState(false)
 
+  // Bidirectional scroll reveal & entry animation states
+  const [heroBoardVisible, setHeroBoardVisible] = useState(false)
+  const [vchatVisible, setVchatVisible] = useState(false)
+  const [featuresVisible, setFeaturesVisible] = useState(false)
+  const heroBoardRef = useRef(null)
+  const vchatRef = useRef(null)
+  const featuresRef = useRef(null)
+
+  useEffect(() => {
+    let hasMounted = false
+
+    // Initial page load entrance: animate hero board cleanly after first paint
+    const loadTimer = setTimeout(() => {
+      hasMounted = true
+      setHeroBoardVisible(true)
+    }, 120)
+
+    // Bidirectional scroll reveal observer (animates forward on scroll-down, backward on scroll-up)
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observerCallback = (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target === heroBoardRef.current) {
+            if (hasMounted) {
+              setHeroBoardVisible(entry.isIntersecting)
+            }
+          } else if (entry.target === vchatRef.current) {
+            setVchatVisible(entry.isIntersecting)
+          } else if (entry.target === featuresRef.current) {
+            setFeaturesVisible(entry.isIntersecting)
+          }
+        })
+      }
+
+      const observer = new IntersectionObserver(observerCallback, {
+        threshold: 0.08,
+        rootMargin: '0px 0px -30px 0px'
+      })
+
+      if (heroBoardRef.current) observer.observe(heroBoardRef.current)
+      if (vchatRef.current) observer.observe(vchatRef.current)
+      if (featuresRef.current) observer.observe(featuresRef.current)
+
+      return () => {
+        clearTimeout(loadTimer)
+        observer.disconnect()
+      }
+    } else {
+      setHeroBoardVisible(true)
+      setVchatVisible(true)
+      setFeaturesVisible(true)
+      return () => clearTimeout(loadTimer)
+    }
+  }, [])
+
   // V-Chat & Board Chat Showcase state
   const [micMuted, setMicMuted] = useState(false)
   const [camOff, setCamOff] = useState(false)
@@ -419,8 +473,10 @@ function LandingPage() {
         </section>
 
         {/* 4. Product Board Preview Mockup with Visible Physical Drag & Drop */}
-        <section className="w-full max-w-5xl px-6 sm:px-10 mb-8">
-          <div className="rounded-2xl bg-[#1C1C24]/90 border border-[#2A2A35] overflow-hidden shadow-2xl backdrop-blur-md">
+        <section ref={heroBoardRef} className="w-full max-w-5xl px-6 sm:px-10 mb-8">
+          <div className={`rounded-2xl bg-[#1C1C24]/90 border border-[#2A2A35] overflow-hidden shadow-2xl backdrop-blur-md card-reveal ${
+            heroBoardVisible ? 'card-visible' : 'card-hidden'
+          }`}>
 
             {/* Window Bar */}
             <div className="flex items-center gap-2 px-4 py-3.5 border-b border-[#2A2A35] bg-[#171720]">
@@ -611,15 +667,19 @@ function LandingPage() {
         </section>
 
         {/* Section Divider: Board Preview -> V-Chat */}
-        <div className="w-full max-w-5xl mx-auto px-6 sm:px-10 my-16 sm:my-20">
+        <div className={`w-full max-w-5xl mx-auto px-6 sm:px-10 my-16 sm:my-20 transition-all duration-700 ${
+          vchatVisible ? 'opacity-100 scale-x-100' : 'opacity-20 scale-x-75'
+        }`}>
           <div className="h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
         </div>
 
         {/* 5. Built-in V-Chat & Real-time Messaging Section */}
-        <section className="w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8">
+        <section ref={vchatRef} className="w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8">
 
           {/* Section Heading & Subtitle */}
-          <div className="mb-12 text-center flex flex-col items-center">
+          <div className={`mb-12 text-center flex flex-col items-center heading-reveal ${
+            vchatVisible ? 'heading-visible' : 'heading-hidden'
+          }`}>
             <p className="text-[#7C6FF7] text-xs sm:text-sm font-semibold mb-3">
               Built-in V-Chat & Real-time Messaging
             </p>
@@ -635,7 +695,9 @@ function LandingPage() {
           </div>
 
           {/* Authentic V-Chat Modal & Board Chat Mockup Window */}
-          <div className="rounded-2xl bg-[#0F0F17]/95 border border-purple-500/30 overflow-hidden shadow-2xl shadow-purple-950/40 backdrop-blur-xl">
+          <div className={`rounded-2xl bg-[#0F0F17]/95 border border-purple-500/30 overflow-hidden shadow-2xl shadow-purple-950/40 backdrop-blur-xl card-reveal stagger-delay ${
+            vchatVisible ? 'card-visible' : 'card-hidden'
+          }`}>
 
             {/* Top Bar of the Mockup Window (Matches BoardHuddleModal.jsx) */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 bg-[#14141F]">
@@ -1571,21 +1633,29 @@ function LandingPage() {
         </section>
 
         {/* Section Divider: V-Chat -> Features */}
-        <div className="w-full max-w-5xl mx-auto px-6 sm:px-10 my-16 sm:my-20">
+        <div className={`w-full max-w-5xl mx-auto px-6 sm:px-10 my-16 sm:my-20 transition-all duration-700 ${
+          featuresVisible ? 'opacity-100 scale-x-100' : 'opacity-20 scale-x-75'
+        }`}>
           <div className="h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
         </div>
 
         {/* Features — transparent boxes with clean borders */}
-        <section className="max-w-6xl mx-auto px-6 sm:px-10 pb-20">
+        <section ref={featuresRef} className="max-w-6xl mx-auto px-6 sm:px-10 pb-20">
 
-          {/* Section label — used meaningfully, not as ALL-CAPS decoration */}
-          <p className="text-[#7C6FF7] text-sm font-medium mb-3">What you get</p>
-          <h2 className="text-[40px] sm:text-[52px] font-bold tracking-[-0.03em] leading-[1.05] text-white mb-10 max-w-2xl">
-            Designed for focus.<br />
-            <span className="text-[#7C6FF7]">Built for simplicity.</span>
-          </h2>
+          {/* Section label & heading */}
+          <div className={`heading-reveal ${
+            featuresVisible ? 'heading-visible' : 'heading-hidden'
+          }`}>
+            <p className="text-[#7C6FF7] text-sm font-medium mb-3">What you get</p>
+            <h2 className="text-[40px] sm:text-[52px] font-bold tracking-[-0.03em] leading-[1.05] text-white mb-10 max-w-2xl">
+              Designed for focus.<br />
+              <span className="text-[#7C6FF7]">Built for simplicity.</span>
+            </h2>
+          </div>
 
-          <div className="border border-white/10 rounded-2xl overflow-hidden bg-transparent divide-y divide-white/10">
+          <div className={`border border-white/10 rounded-2xl overflow-hidden bg-transparent divide-y divide-white/10 card-reveal stagger-delay ${
+            featuresVisible ? 'card-visible' : 'card-hidden'
+          }`}>
 
             {/* Feature 1 — horizontal split, text-heavy */}
             <div className="grid grid-cols-1 lg:grid-cols-2 bg-transparent hover:bg-white/[0.015] transition-colors">
@@ -1761,6 +1831,44 @@ function LandingPage() {
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
+        }
+        .card-reveal {
+          transition: opacity 750ms cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 750ms cubic-bezier(0.16, 1, 0.3, 1),
+                      filter 750ms cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform, filter;
+          transform-origin: center bottom;
+        }
+        .card-hidden {
+          opacity: 0;
+          transform: perspective(1000px) rotateX(6deg) translateY(55px) scale(0.92);
+          filter: blur(5px);
+          pointer-events: none;
+        }
+        .card-visible {
+          opacity: 1;
+          transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1);
+          filter: blur(0px);
+          pointer-events: auto;
+        }
+        .stagger-delay.card-visible {
+          transition-delay: 110ms;
+        }
+        .heading-reveal {
+          transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
+                      filter 600ms cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform, filter;
+        }
+        .heading-hidden {
+          opacity: 0;
+          transform: translateY(32px);
+          filter: blur(4px);
+        }
+        .heading-visible {
+          opacity: 1;
+          transform: translateY(0);
+          filter: blur(0px);
         }
       `}</style>
     </div>
