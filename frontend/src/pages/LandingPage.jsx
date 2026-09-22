@@ -74,54 +74,100 @@ function LandingPage() {
   const [micMuted, setMicMuted] = useState(false)
   const [camOff, setCamOff] = useState(false)
   const [activeCodeFile, setActiveCodeFile] = useState(0)
+  const [isCodePaused, setIsCodePaused] = useState(false)
   const codeScrollRef = useRef(null)
+  const resumeTimeoutRef = useRef(null)
 
-  // Auto file cycling & slow scrolling:
-  // 1st file scrolls slowly to the last line, pauses, then 2nd file scrolls to end, then 3rd file, and repeats
+  const handleCodeInteractionStart = () => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current)
+    }
+    setIsCodePaused(true)
+  }
+
+  const handleCodeWheel = () => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current)
+    }
+    setIsCodePaused(true)
+    // If user stops scrolling for 4 seconds, allow auto-scroll to resume
+    resumeTimeoutRef.current = setTimeout(() => {
+      setIsCodePaused(false)
+    }, 4000)
+  }
+
+  const handleCodeInteractionEnd = () => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current)
+    }
+    // Resume auto-scrolling 1.5s after cursor leaves the code editor
+    resumeTimeoutRef.current = setTimeout(() => {
+      setIsCodePaused(false)
+    }, 1500)
+  }
+
+  // Reset scroll to top upon file switch
   useEffect(() => {
-    let animFrame = null
-    let switchTimer = null
-
-    // Reset scroll to top upon file switch
     if (codeScrollRef.current) {
       codeScrollRef.current.scrollTop = 0
     }
+  }, [activeCodeFile])
 
-    // Pause 1.2s at top so initial code can be read, then scroll slowly to end
+  // Auto file cycling & slow scrolling:
+  // 1st file scrolls slowly to the last line, pauses, then 2nd file scrolls to end, then 3rd file, and repeats.
+  // When cursor is placed or scrolling on the editor, auto-scrolling completely halts with ZERO fighting/deadlock.
+  useEffect(() => {
+    if (isCodePaused) return
+
+    let animFrame = null
+    let switchTimer = null
+
+    // Pause 1.2s at current scroll position so code can be read, then scroll slowly to end
     const scrollStartTimer = setTimeout(() => {
       if (!codeScrollRef.current) return
       const container = codeScrollRef.current
       const maxScroll = container.scrollHeight - container.clientHeight
       if (maxScroll <= 0) return
 
-      const scrollDuration = 4800 // 4.8 seconds smooth slow downward scroll to bottom
+      const remainingDistance = maxScroll - container.scrollTop
+      if (remainingDistance <= 4) {
+        // Already at or near bottom, wait 2.5s and cycle to next file
+        switchTimer = setTimeout(() => {
+          setActiveCodeFile((prev) => (prev + 1) % 3)
+        }, 2500)
+        return
+      }
+
+      // Smooth slow scroll for remaining distance
+      const scrollDuration = Math.max((remainingDistance / maxScroll) * 4800, 1200)
       const startTime = performance.now()
       const startScrollTop = container.scrollTop
 
       const stepScroll = (timestamp) => {
+        if (!codeScrollRef.current) return
         const elapsed = timestamp - startTime
         const progress = Math.min(elapsed / scrollDuration, 1)
-        container.scrollTop = startScrollTop + maxScroll * progress
+        container.scrollTop = startScrollTop + remainingDistance * progress
 
         if (progress < 1) {
           animFrame = requestAnimationFrame(stepScroll)
+        } else {
+          // Reached bottom, pause 2.5s then switch to next file
+          switchTimer = setTimeout(() => {
+            setActiveCodeFile((prev) => (prev + 1) % 3)
+          }, 2500)
         }
       }
 
       animFrame = requestAnimationFrame(stepScroll)
     }, 1200)
 
-    // Switch to next file after reading and scrolling: 1.2s pause + 4.8s scroll + 2.2s pause at bottom = 8.2s
-    switchTimer = setTimeout(() => {
-      setActiveCodeFile((prev) => (prev + 1) % 3)
-    }, 8200)
-
     return () => {
       clearTimeout(scrollStartTimer)
       clearTimeout(switchTimer)
       if (animFrame) cancelAnimationFrame(animFrame)
     }
-  }, [activeCodeFile])
+  }, [activeCodeFile, isCodePaused])
 
   // Auto Chat typing & multi-message ongoing sequence:
   // Dynamically types and replies across 5-6 messages so the conversation visibly keeps going
@@ -744,7 +790,11 @@ function LandingPage() {
               <div className="lg:col-span-7 xl:col-span-8 p-3.5 sm:p-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 bg-[#0A0A10] relative min-h-0">
 
                 {/* 1. Main Stage Screen Share: Spacious, Uncompressed Live Code Editor Session */}
-                <div className="relative bg-[#12121E] border-2 border-emerald-500/80 rounded-xl overflow-hidden ring-2 ring-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.15)] flex flex-col mb-2.5 sm:mb-3">
+                <div
+                  onMouseEnter={handleCodeInteractionStart}
+                  onMouseLeave={handleCodeInteractionEnd}
+                  className="relative bg-[#12121E] border-2 border-emerald-500/80 rounded-xl overflow-hidden ring-2 ring-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.15)] flex flex-col mb-2.5 sm:mb-3"
+                >
 
                   {/* Top Bar inside Screen Share Window - Clickable & Cycling Tabs */}
                   <div className="bg-[#181826] border-b border-white/10 px-3 py-2 flex items-center justify-between">
@@ -794,7 +844,11 @@ function LandingPage() {
                   {/* Backend Code Editor Body - Spacious, uncompressed with slow scrolling */}
                   <div
                     ref={codeScrollRef}
-                    className="p-3.5 sm:p-4 font-mono text-[11px] sm:text-xs leading-relaxed text-gray-300 select-none bg-[#0D0D15] overflow-x-auto text-left h-[320px] sm:h-[350px] min-h-[320px] overflow-y-auto scroll-smooth"
+                    onMouseEnter={handleCodeInteractionStart}
+                    onMouseLeave={handleCodeInteractionEnd}
+                    onWheel={handleCodeWheel}
+                    onTouchStart={handleCodeInteractionStart}
+                    className="p-3.5 sm:p-4 font-mono text-[11px] sm:text-xs leading-relaxed text-gray-300 select-none bg-[#0D0D15] overflow-x-auto text-left h-[320px] sm:h-[350px] min-h-[320px] overflow-y-auto"
                   >
 
                     {/* File 1: stripe.webhook.controller.ts */}
