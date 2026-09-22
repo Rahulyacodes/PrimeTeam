@@ -185,127 +185,70 @@ function LoginPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-bg-primary relative overflow-hidden">
       {/* Background glow accents */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none animate-auth-glow" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none animate-auth-glow" />
 
       {/* Main card */}
-      <div className="w-full max-w-md p-8 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/50 backdrop-blur-xl relative z-10 flex flex-col gap-6">
+      <div className="w-full max-w-md p-8 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/50 backdrop-blur-xl relative z-10 flex flex-col gap-6 animate-auth-card">
         
         {/* Header / Logo */}
-        <div className="text-center flex flex-col items-center gap-2">
+        <div className="text-center flex flex-col items-center gap-2 animate-auth-header">
           <StatusBarsLogo size={52} className="mb-1" />
           <h1 className="text-2xl font-bold tracking-tight text-white">PrimeTeam</h1>
           <p className="text-sm text-[#8B8B9E]">Welcome back! Sign in to your workspace</p>
         </div>
 
-        {/* Tab Switcher (Password Default vs OTP Code Add-on) */}
-        <div className="flex bg-[#0F0F13] p-1 rounded-xl border border-[#2A2A35]">
-          <button
-            type="button"
-            onClick={() => { setLoginMethod('password'); setError(''); setSuccessMsg('') }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              loginMethod === 'password'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                : 'text-[#8B8B9E] hover:text-white'
-            }`}
-          >
-            Password Sign-In
-          </button>
-          <button
-            type="button"
-            onClick={() => { setLoginMethod('otp'); setOtpStep('request'); setError(''); setSuccessMsg('') }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              loginMethod === 'otp'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                : 'text-[#8B8B9E] hover:text-white'
-            }`}
-          >
-            Email OTP Sign-In
-          </button>
-        </div>
-
-        {/* Success / Notification */}
-        {successMsg && (
-          <div className="p-3.5 rounded-xl text-xs font-medium bg-purple-500/10 border border-purple-500/30 text-purple-300 flex items-center gap-2">
-            <span>📩</span>
-            <span>{successMsg}</span>
-          </div>
-        )}
-
-        {/* Error notification */}
-        {error && (
-          <div className="p-3.5 rounded-xl text-sm font-medium bg-danger/10 border border-danger/30 text-danger flex items-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form Option 1: Standard Password Sign-In (Default) */}
-        {loginMethod === 'password' ? (
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-                Email or Username
-              </label>
-              <input
-                type="text"
-                value={identifier}
-                onChange={e => setIdentifier(e.target.value)}
-                placeholder="name@example.com or username"
-                required
-                className="w-full px-4 py-3 rounded-xl bg-[#0F0F16] border border-[#262636] text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowForgotPassword(true)}
-                  className="text-xs text-purple-400 hover:underline hover:text-purple-300 font-medium transition-colors cursor-pointer"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-3 rounded-xl bg-[#0F0F16] border border-[#262636] text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
-              />
-            </div>
-
+        {/* Form Body with Staggered Entrance */}
+        <div className="flex flex-col gap-6 animate-auth-form">
+          {/* Tab Switcher (Password Default vs OTP Code Add-on) */}
+          <div className="flex bg-[#0F0F13] p-1 rounded-xl border border-[#2A2A35]">
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 cursor-pointer"
+              type="button"
+              onClick={() => { setLoginMethod('password'); setError(''); setSuccessMsg('') }}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                loginMethod === 'password'
+                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                  : 'text-[#8B8B9E] hover:text-white'
+              }`}
             >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  <span>Signing in...</span>
-                </>
-              ) : (
-                'Sign in with Password'
-              )}
+              Password Sign-In
             </button>
-          </form>
-        ) : (
-          /* Form Option 2: Passwordless Email OTP Login (Add-on) */
-          otpStep === 'request' ? (
-            <form onSubmit={handleRequestLoginOtp} className="flex flex-col gap-4">
+            <button
+              type="button"
+              onClick={() => { setLoginMethod('otp'); setOtpStep('request'); setError(''); setSuccessMsg('') }}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                loginMethod === 'otp'
+                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                  : 'text-[#8B8B9E] hover:text-white'
+              }`}
+            >
+              Email OTP Sign-In
+            </button>
+          </div>
+
+          {/* Success / Notification */}
+          {successMsg && (
+            <div className="p-3.5 rounded-xl text-xs font-medium bg-purple-500/10 border border-purple-500/30 text-purple-300 flex items-center gap-2">
+              <span>📩</span>
+              <span>{successMsg}</span>
+            </div>
+          )}
+
+          {/* Error notification */}
+          {error && (
+            <div className="p-3.5 rounded-xl text-sm font-medium bg-danger/10 border border-danger/30 text-danger flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12"/>
+                <line x1="12" y1="16" x2="12.01"/>
+              </svg>
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* METHOD 1: Password Login */}
+          {loginMethod === 'password' && (
+            <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
                   Email or Username
@@ -313,118 +256,154 @@ function LoginPage() {
                 <input
                   type="text"
                   value={identifier}
-                  onChange={e => setIdentifier(e.target.value)}
-                  placeholder="name@example.com or username"
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="Enter email or username"
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-[#0F0F16] border border-[#262636] text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-xs text-purple-400 hover:text-purple-300 hover:underline cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-600/30 cursor-pointer mt-2"
               >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    <span>Sending Code...</span>
-                  </>
-                ) : (
-                  'Send One-Time Code'
-                )}
+                {loading ? 'Signing in...' : 'Sign In with Password'}
               </button>
             </form>
-          ) : (
-            <form onSubmit={handleVerifyLoginOtp} className="flex flex-col gap-4">
-              <div className="bg-[#121218] border border-[#282838] rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-400">Enter the 6-digit code sent to your email for</p>
-                <p className="text-sm font-bold text-white mt-0.5 truncate">{identifier}</p>
-              </div>
+          )}
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
-                  6-Digit Sign-In Code
-                </label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
-                  required
-                  className="w-full text-center text-2xl font-mono tracking-widest px-4 py-3 rounded-xl bg-[#0F0F16] border border-purple-500/50 text-white placeholder:text-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
-                />
-              </div>
+          {/* METHOD 2: Email OTP Login */}
+          {loginMethod === 'otp' && (
+            otpStep === 'request' ? (
+              <form onSubmit={handleRequestLoginOtp} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
+                    Account Email or Username
+                  </label>
+                  <input
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="name@company.com or username"
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  />
+                  <p className="text-[11px] text-[#8B8B9E] mt-0.5">
+                    We will send a one-time 6-digit login code to your registered email address.
+                  </p>
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading || otp.length !== 6}
-                className="w-full mt-1 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    <span>Verifying Code...</span>
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </button>
-
-              <div className="flex items-center justify-between text-xs mt-1">
                 <button
-                  type="button"
-                  onClick={() => { setOtpStep('request'); setError(''); setSuccessMsg('') }}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-600/30 cursor-pointer mt-2"
                 >
-                  ← Back
+                  {loading ? 'Sending code...' : 'Send Login Code'}
                 </button>
-                <button
-                  type="button"
-                  disabled={resendCooldown > 0 || loading}
-                  onClick={handleResendLoginOtp}
-                  className="text-purple-400 hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer font-medium"
-                >
-                  {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend Code'}
-                </button>
-              </div>
-            </form>
-          )
-        )}
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyLoginOtp} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
+                      6-Digit Login Code
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => { setOtpStep('request'); setError(''); setSuccessMsg('') }}
+                      className="text-xs text-purple-400 hover:underline cursor-pointer"
+                    >
+                      Change Email
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="123456"
+                    maxLength={6}
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-center text-lg tracking-widest font-mono focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  />
+                </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-1">
-          <div className="flex-1 h-px bg-[#2A2A35]" />
-          <span className="text-xs text-[#8B8B9E] uppercase tracking-wider font-medium">or</span>
-          <div className="flex-1 h-px bg-[#2A2A35]" />
+                <button
+                  type="submit"
+                  disabled={loading || otp.length !== 6}
+                  className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-600/30 cursor-pointer mt-2"
+                >
+                  {loading ? 'Verifying...' : 'Verify & Log In'}
+                </button>
+
+                <div className="text-center text-xs text-[#8B8B9E] mt-1">
+                  <span>Didn't receive the code? </span>
+                  <button
+                    type="button"
+                    disabled={resendCooldown > 0 || loading}
+                    onClick={handleResendLoginOtp}
+                    className="text-purple-400 hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer font-medium"
+                  >
+                    {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend Code'}
+                  </button>
+                </div>
+              </form>
+            )
+          )}
         </div>
 
-        {/* Official Google OAuth Component */}
-        <div className="w-full flex justify-center">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => setError('Google Sign-In failed or was closed')}
-            useOneTap
-            theme="filled_black"
-            shape="pill"
-            text="continue_with"
-          />
-        </div>
+        {/* Footer Area with Staggered Entrance */}
+        <div className="flex flex-col gap-4 animate-auth-footer">
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 h-px bg-[#2A2A35]" />
+            <span className="text-xs text-[#8B8B9E] uppercase tracking-wider font-medium">or</span>
+            <div className="flex-1 h-px bg-[#2A2A35]" />
+          </div>
 
-        {/* Footer */}
-        <p className="text-center text-sm text-[#8B8B9E] mt-1">
-          Don't have an account?{' '}
-          <Link to="/register" className="font-semibold text-purple-400 hover:underline hover:text-purple-300 transition-colors">
-            Sign up
-          </Link>
-        </p>
+          {/* Official Google OAuth Component */}
+          <div className="w-full flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google Sign-In failed or was closed')}
+              useOneTap
+              theme="filled_black"
+              shape="pill"
+              text="continue_with"
+            />
+          </div>
+
+          {/* Footer */}
+          <p className="text-center text-sm text-[#8B8B9E] mt-1">
+            Don't have an account?{' '}
+            <Link to="/register" className="font-semibold text-purple-400 hover:underline hover:text-purple-300 transition-colors">
+              Sign up
+            </Link>
+          </p>
+        </div>
 
         {/* Forgot Password Modal */}
         <ForgotPasswordModal
