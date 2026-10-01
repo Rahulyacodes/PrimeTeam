@@ -258,7 +258,7 @@ function RegisterPage() {
                     <span>Sending Code...</span>
                   </>
                 ) : (
-                  'Create Workspace'
+                  'Sign up'
                 )}
               </button>
             </form>
