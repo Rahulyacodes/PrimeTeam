@@ -405,12 +405,13 @@ function LoginPage() {
           </p>
         </div>
 
-        {/* Forgot Password Modal */}
-        <ForgotPasswordModal
-          isOpen={showForgotPassword}
-          onClose={() => setShowForgotPassword(false)}
-        />
       </div>
+
+      {/* Forgot Password Modal (Full-screen overlay) */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   )
 }
