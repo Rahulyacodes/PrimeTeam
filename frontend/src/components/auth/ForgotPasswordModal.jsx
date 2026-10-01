@@ -130,10 +130,28 @@ function ForgotPasswordModal({ isOpen, onClose }) {
     onClose()
   }
 
+  // Close on Escape key press
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleClose()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div
+      onClick={handleClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn cursor-pointer"
+    >
       {/* Modal Card - 100% matched to LoginPage / RegisterPage card system */}
-      <div className="w-full max-w-md p-8 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/80 backdrop-blur-xl relative z-10 flex flex-col gap-6 text-text-primary animate-auth-card">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md p-8 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/80 backdrop-blur-xl relative z-10 flex flex-col gap-6 text-text-primary animate-auth-card cursor-default"
+      >
         
         {/* Close Button */}
         <button
