@@ -15,6 +15,17 @@ function ForgotPasswordModal({ isOpen, onClose }) {
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutes in seconds
   const [resendCooldown, setResendCooldown] = useState(120) // 2 minutes cooldown (120 seconds)
 
+  const handleClose = () => {
+    setStep(1)
+    setEmail('')
+    setOtp('')
+    setNewPassword('')
+    setConfirmPassword('')
+    setError('')
+    setMessage('')
+    onClose()
+  }
+
   // Live 5-Minute Countdown Timer for OTP Expiry
   useEffect(() => {
     let timerId
@@ -37,13 +48,23 @@ function ForgotPasswordModal({ isOpen, onClose }) {
     return () => clearInterval(timerId)
   }, [isOpen, step, resendCooldown])
 
+  // Close on Escape key press (MUST be called before any early return)
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleClose()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
-
-  if (!isOpen) return null
 
   // Step 1: Send OTP
   const handleSendOtp = async (e) => {
@@ -119,28 +140,8 @@ function ForgotPasswordModal({ isOpen, onClose }) {
     }
   }
 
-  const handleClose = () => {
-    setStep(1)
-    setEmail('')
-    setOtp('')
-    setNewPassword('')
-    setConfirmPassword('')
-    setError('')
-    setMessage('')
-    onClose()
-  }
-
-  // Close on Escape key press
-  useEffect(() => {
-    if (!isOpen) return
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        handleClose()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen])
+  // Early return ONLY after all React Hooks have been declared
+  if (!isOpen) return null
 
   return (
     <div
