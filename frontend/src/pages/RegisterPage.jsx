@@ -205,7 +205,7 @@ function RegisterPage() {
                   name="username"
                   value={form.username}
                   onChange={handleChange}
-                  placeholder="alice"
+                  placeholder="Elon"
                   required
                   className="w-full px-4 py-3 rounded-xl bg-[#0F0F16] border border-[#262636] text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
                 />
@@ -221,7 +221,7 @@ function RegisterPage() {
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  placeholder="alice@company.com"
+                  placeholder="Elon@company.com"
                   required
                   className="w-full px-4 py-3 rounded-xl bg-[#0F0F16] border border-[#262636] text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
                 />
