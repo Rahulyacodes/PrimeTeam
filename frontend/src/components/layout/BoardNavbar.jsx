@@ -642,9 +642,11 @@ function BoardNavbar({
 
         {/* Chat Toggle Button */}
         <button
+          id="board-chat-toggle-btn"
+          data-chat-toggle="true"
           onClick={() => {
             if (setIsChatOpen) {
-              setIsChatOpen(!isChatOpen)
+              setIsChatOpen((prev) => !prev)
             }
           }}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-xs font-semibold cursor-pointer ${

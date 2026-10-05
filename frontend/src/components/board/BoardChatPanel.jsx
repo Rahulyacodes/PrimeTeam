@@ -37,6 +37,11 @@ function BoardChatPanel({ board, onClose, onNewMessageReceived }) {
   // Click/Tap outside listener to close chat panel, active message menu, and clear highlight on click
   useEffect(() => {
     const handleClick = (event) => {
+      // If clicking the chat toggle button in the navbar, let the button handle toggling
+      if (event.target?.closest && event.target.closest('[data-chat-toggle="true"], #board-chat-toggle-btn')) {
+        return
+      }
+
       if (chatPanelRef.current && !chatPanelRef.current.contains(event.target)) {
         onClose()
       }
