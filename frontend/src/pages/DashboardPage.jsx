@@ -139,14 +139,25 @@ function DashboardPage() {
                   <div
                     key={board._id}
                     onClick={() => navigate(`/board/${board._id}`)}
-                    className="rounded-2xl p-4 cursor-pointer transition-all hover:scale-[1.03] hover:shadow-2xl border border-white/10 flex flex-col justify-between group relative overflow-hidden"
+                    className="rounded-2xl p-4 cursor-pointer transition-all duration-200 hover:scale-[1.03] hover:shadow-2xl border border-white/10 hover:border-white/20 flex flex-col justify-between group relative overflow-hidden bg-[#181820]"
                     style={{
-                      ...bgStyle,
-                      minHeight: '130px'
+                      minHeight: '130px',
+                      isolation: 'isolate'
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none" />
-                    <div className="flex justify-between items-start gap-2 relative z-10">
+                    {/* Background Layer: handles both images and linear gradients cleanly */}
+                    <div
+                      className="absolute inset-0 pointer-events-none transition-transform duration-300 ease-out group-hover:scale-105"
+                      style={bgStyle}
+                    />
+
+                    {/* Uniform gradient overlay: darkens the bottom edge to ensure consistent contrast and seamless bottom border */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 pointer-events-none" />
+
+                    {/* Crisp border overlay to ensure 100% clean anti-aliasing on top of images */}
+                    <div className="absolute inset-0 rounded-2xl border border-white/10 group-hover:border-white/20 pointer-events-none z-10 transition-colors" />
+
+                    <div className="flex justify-between items-start gap-2 relative z-20">
                       <h3 className="font-bold text-white text-base drop-shadow-md group-hover:underline truncate pr-1">
                         {board.title}
                       </h3>
@@ -180,7 +191,7 @@ function DashboardPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-white/90 font-medium relative z-10 drop-shadow">
+                    <div className="flex items-center justify-between text-[11px] text-white/90 font-medium relative z-20 drop-shadow">
                       <span>Open board →</span>
                     </div>
                   </div>

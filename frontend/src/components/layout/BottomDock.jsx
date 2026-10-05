@@ -208,16 +208,26 @@ function BottomDock({ activeTab = 'board', setActiveTab }) {
                         if (setActiveTab) setActiveTab('board')
                         navigate(`/board/${b._id}`)
                       }}
-                      className={`rounded-xl p-4 cursor-pointer transition-all hover:scale-[1.02] border relative overflow-hidden flex flex-col justify-between ${
+                      className={`rounded-xl p-4 cursor-pointer transition-all hover:scale-[1.02] border relative overflow-hidden flex flex-col justify-between bg-[#181820] ${
                         b._id === boardId ? 'border-purple-500 ring-2 ring-purple-500/50' : 'border-white/10'
                       }`}
                       style={{
-                        ...bgStyle,
-                        minHeight: '90px'
+                        minHeight: '90px',
+                        isolation: 'isolate'
                       }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none" />
-                      <div className="flex justify-between items-start gap-2 relative z-10">
+                      {/* Background Layer */}
+                      <div
+                        className="absolute inset-0 pointer-events-none transition-transform duration-300 ease-out group-hover:scale-105"
+                        style={bgStyle}
+                      />
+                      {/* Uniform gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 pointer-events-none" />
+                      {/* Crisp overlay border */}
+                      <div className={`absolute inset-0 rounded-xl pointer-events-none z-10 border ${
+                        b._id === boardId ? 'border-purple-500' : 'border-white/10'
+                      }`} />
+                      <div className="flex justify-between items-start gap-2 relative z-20">
                         <h4 className="font-bold text-white drop-shadow text-sm truncate pr-1">{b.title}</h4>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {activeHuddles[b._id]?.count > 0 && (
