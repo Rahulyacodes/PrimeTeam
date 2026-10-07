@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/layout/Navbar'
 import { useAuth } from '../context/AuthContext'
-import { updateProfile, changePassword, requestEmailChangeOtp, verifyEmailChangeOtp } from '../api'
+import { updateProfile, updateUsername, changePassword, requestEmailChangeOtp, verifyEmailChangeOtp } from '../api'
 import { BOT_SEEDS, getDiceBearAvatar } from '../utils/avatars'
 
 function SettingsPage() {
@@ -15,6 +15,10 @@ function SettingsPage() {
   const [selectedAvatar, setSelectedAvatar] = useState(user?.avatar || '')
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileMsg, setProfileMsg] = useState({ type: '', text: '' })
+
+  // Dedicated Username Handle State
+  const [usernameLoading, setUsernameLoading] = useState(false)
+  const [usernameMsg, setUsernameMsg] = useState({ type: '', text: '' })
 
   // Avatar Edit State (Menu & Modal)
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
@@ -164,6 +168,54 @@ function SettingsPage() {
     }
   }
 
+  // Handle Username Update with Availability Check
+  const handleUpdateUsername = async () => {
+    setUsernameMsg({ type: '', text: '' })
+    setProfileMsg({ type: '', text: '' })
+
+    if (!username || !username.trim()) {
+      setUsernameMsg({ type: 'error', text: 'Please enter a valid username' })
+      return
+    }
+
+    const cleanUsername = username.trim()
+
+    if (cleanUsername === user?.username) {
+      setUsernameMsg({ type: 'error', text: 'This is already your current username' })
+      return
+    }
+
+    if (cleanUsername.length < 3) {
+      setUsernameMsg({ type: 'error', text: 'Username must be at least 3 characters long' })
+      return
+    }
+
+    if (/\s/.test(cleanUsername)) {
+      setUsernameMsg({ type: 'error', text: 'Username cannot contain spaces' })
+      return
+    }
+
+    setUsernameLoading(true)
+
+    try {
+      const res = await updateUsername({ username: cleanUsername })
+      updateUser(res.data.user)
+      setUsername(res.data.user.username)
+      setUsernameMsg({ type: 'success', text: 'username updated' })
+      setProfileMsg({ type: '', text: '' })
+    } catch (err) {
+      setProfileMsg({ type: '', text: '' })
+      const serverErr = err.response?.data?.error || err.response?.data?.message || ''
+      const isTaken = serverErr.toLowerCase().includes('taken') || serverErr.toLowerCase().includes('already exists')
+      setUsernameMsg({
+        type: 'error',
+        text: isTaken ? 'already taken choose another' : (serverErr || 'already taken choose another')
+      })
+    } finally {
+      setUsernameLoading(false)
+    }
+  }
+
   // Handle Profile Update Submit
   const handleProfileSubmit = async (e) => {
     e.preventDefault()
@@ -178,11 +230,19 @@ function SettingsPage() {
       })
       updateUser(res.data.user)
       setProfileMsg({ type: 'success', text: res.data.message || 'Profile updated successfully!' })
+      setUsernameMsg({ type: '', text: '' })
     } catch (err) {
-      setProfileMsg({
-        type: 'error',
-        text: err.response?.data?.error || 'Failed to update profile. Please try again.'
-      })
+      const serverErr = err.response?.data?.error || err.response?.data?.message || ''
+      const isTaken = serverErr.toLowerCase().includes('taken') || serverErr.toLowerCase().includes('already exists')
+      if (isTaken) {
+        setUsernameMsg({ type: 'error', text: 'already taken choose another' })
+        setProfileMsg({ type: '', text: '' })
+      } else {
+        setProfileMsg({
+          type: 'error',
+          text: serverErr || 'Failed to update profile. Please try again.'
+        })
+      }
     } finally {
       setProfileLoading(false)
     }
@@ -477,17 +537,62 @@ function SettingsPage() {
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                   Username Handle
                 </label>
-                <div className="relative">
+
+                <div className="relative flex items-center">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">@</span>
                   <input
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {
+                      setUsername(e.target.value)
+                      if (usernameMsg.text) setUsernameMsg({ type: '', text: '' })
+                      if (profileMsg.text) setProfileMsg({ type: '', text: '' })
+                    }}
                     placeholder="username"
                     required
-                    className="w-full bg-[#0F0F14] border border-[#2A2A38] focus:border-purple-500 rounded-xl pl-9 pr-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-medium"
+                    className={`w-full bg-[#0F0F14] border rounded-xl pl-9 pr-24 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-medium ${
+                      usernameMsg.type === 'error'
+                        ? 'border-red-500/50 focus:border-red-500'
+                        : usernameMsg.type === 'success'
+                        ? 'border-emerald-500/50 focus:border-emerald-500'
+                        : 'border-[#2A2A38] focus:border-purple-500'
+                    }`}
                   />
+
+                  <button
+                    type="button"
+                    onClick={handleUpdateUsername}
+                    disabled={usernameLoading || !username.trim() || username.trim() === user?.username}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-transparent border border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white disabled:opacity-40 disabled:border-purple-500/30 disabled:text-gray-500 disabled:cursor-not-allowed text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 active:scale-[0.98]"
+                  >
+                    {usernameLoading ? (
+                      <>
+                        <svg className="animate-spin h-3 w-3 text-purple-300" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Checking...</span>
+                      </>
+                    ) : (
+                      <span>Update</span>
+                    )}
+                  </button>
                 </div>
+
+                {/* Inline feedback message without box or borders */}
+                {usernameMsg.text ? (
+                  <p
+                    className={`mt-1.5 text-xs font-medium animate-fadeIn ${
+                      usernameMsg.type === 'error' ? 'text-red-400' : 'text-emerald-400'
+                    }`}
+                  >
+                    {usernameMsg.text}
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-gray-500 mt-1.5">
+                    Your unique handle used for mentions and profile identification.
+                  </p>
+                )}
               </div>
 
               <div>

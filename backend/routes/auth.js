@@ -419,15 +419,19 @@ router.put('/profile', authenticate, async (req, res, next) => {
             return next(err)
         }
 
-        // If username is changing, verify availability
+        // If username is changing, verify availability (case-insensitive across other users)
         if (username && username.trim() !== user.username) {
-            const existingUsername = await User.findOne({ username: username.trim() })
+            const cleanUsername = username.trim()
+            const existingUsername = await User.findOne({
+                username: { $regex: new RegExp(`^${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+                _id: { $ne: user._id }
+            })
             if (existingUsername) {
-                const err = new Error('Username is already taken')
+                const err = new Error('Already taken, choose another')
                 err.status = 400
                 return next(err)
             }
-            user.username = username.trim()
+            user.username = cleanUsername
         }
 
         if (name !== undefined) user.name = name.trim()
@@ -437,6 +441,78 @@ router.put('/profile', authenticate, async (req, res, next) => {
 
         res.json({
             message: 'Profile updated successfully!',
+            user: {
+                id: user._id,
+                _id: user._id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                avatar: user.avatar,
+                googleId: user.googleId,
+                hasPassword: !!user.passwordHash,
+                createdAt: user.createdAt
+            }
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+//------------------------------------------------- Update Username (Verified Availability) --------------------------------------------------------
+// PUT /api/auth/username
+router.put('/username', authenticate, async (req, res, next) => {
+    try {
+        const { username } = req.body
+        if (!username || !username.trim()) {
+            const err = new Error('Please enter a username')
+            err.status = 400
+            return next(err)
+        }
+
+        const cleanUsername = username.trim()
+
+        if (cleanUsername.length < 3) {
+            const err = new Error('Username must be at least 3 characters long')
+            err.status = 400
+            return next(err)
+        }
+
+        if (/\s/.test(cleanUsername)) {
+            const err = new Error('Username cannot contain spaces')
+            err.status = 400
+            return next(err)
+        }
+
+        const user = await User.findById(req.user.id)
+        if (!user) {
+            const err = new Error('User not found')
+            err.status = 404
+            return next(err)
+        }
+
+        if (cleanUsername === user.username) {
+            const err = new Error('This is already your current username')
+            err.status = 400
+            return next(err)
+        }
+
+        // Check if username already taken by another user (case-insensitive)
+        const existingUser = await User.findOne({
+            username: { $regex: new RegExp(`^${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+            _id: { $ne: user._id }
+        })
+
+        if (existingUser) {
+            const err = new Error('Already taken, choose another')
+            err.status = 400
+            return next(err)
+        }
+
+        user.username = cleanUsername
+        await user.save()
+
+        res.json({
+            message: 'Username updated',
             user: {
                 id: user._id,
                 _id: user._id,
