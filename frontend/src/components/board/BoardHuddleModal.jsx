@@ -103,17 +103,23 @@ function VideoTile({
   const videoRef = useRef(null)
   const [hasVideoTrack, setHasVideoTrack] = useState(false)
 
-  // Attach MediaStream to video element
+  // Attach MediaStream to video element with listener cleanup
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream
+      videoRef.current.play().catch(() => {})
       const checkTracks = () => {
         const videoTracks = stream.getVideoTracks()
         setHasVideoTrack(videoTracks.length > 0 && videoTracks[0].enabled)
       }
       checkTracks()
-      stream.onaddtrack = checkTracks
-      stream.onremovetrack = checkTracks
+      stream.addEventListener('addtrack', checkTracks)
+      stream.addEventListener('removetrack', checkTracks)
+
+      return () => {
+        stream.removeEventListener('addtrack', checkTracks)
+        stream.removeEventListener('removetrack', checkTracks)
+      }
     }
   }, [stream])
 
@@ -334,7 +340,6 @@ function DraggablePipTile({ children, onClick, title = 'Drag to reposition • C
 
   const handleMouseDown = (e) => {
     if (e.button !== 0) return // Left click only
-    e.preventDefault()
     handleStart(e.clientX, e.clientY)
 
     const onMouseMove = (moveEvent) => {
@@ -514,6 +519,13 @@ export default function BoardHuddleModal({
   // Screen share priority check
   const spotlightPeer = peers.find((p) => p.isScreenSharing)
   const isLocalScreenSharing = isScreenSharing
+
+  // Reset minimized state whenever the user explicitly re-opens V-Chat modal
+  useEffect(() => {
+    if (isOpen) {
+      setIsMinimized(false)
+    }
+  }, [isOpen])
 
   // Reset 1-on-1 swap if peers count changes
   useEffect(() => {
@@ -771,11 +783,11 @@ export default function BoardHuddleModal({
               )}
             </button>
 
-            {/* Close Button */}
+            {/* Close Button: Prompts to Leave if call is active, closes lobby if not */}
             <button
-              onClick={onClose}
+              onClick={isHuddleActive ? () => setShowLeaveConfirm(true) : onClose}
               className="p-1.5 rounded-lg bg-transparent text-gray-400 hover:text-white transition-colors cursor-pointer"
-              title="Hide window (call remains active in background)"
+              title={isHuddleActive ? 'Leave V-Chat' : 'Close window'}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
