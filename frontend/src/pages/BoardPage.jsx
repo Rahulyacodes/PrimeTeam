@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   getBoard,
@@ -59,6 +59,12 @@ function BoardPage() {
     toggleVideo: toggleHuddleVideo,
     toggleScreenShare: toggleHuddleScreenShare
   } = useWebRTC({ boardId, user })
+
+  // Cleanly exit call and close the modal window
+  const handleLeaveHuddle = useCallback(() => {
+    leaveHuddle()
+    setIsHuddleOpen(false)
+  }, [leaveHuddle])
 
   // State to track if the user has dismissed the ongoing V-Chat popup alert
   const [hasDismissedOngoingVC, setHasDismissedOngoingVC] = useState(false)
@@ -1154,7 +1160,7 @@ function BoardPage() {
         isScreenSharing={isHuddleScreenSharing}
         isHuddleActive={isHuddleActive}
         joinHuddle={joinHuddle}
-        leaveHuddle={leaveHuddle}
+        leaveHuddle={handleLeaveHuddle}
         toggleAudio={toggleHuddleAudio}
         toggleVideo={toggleHuddleVideo}
         toggleScreenShare={toggleHuddleScreenShare}
