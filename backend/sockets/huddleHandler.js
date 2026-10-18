@@ -37,6 +37,36 @@ function getActiveHuddlesSummary() {
 
 function registerHuddleHandlers(io, socket) {
   /**
+   * Helper function to cleanly remove a socket from a huddle
+   */
+  const handleLeaveHuddle = () => {
+    const boardId = socket.currentHuddleBoardId
+    if (!boardId || !boardHuddles.has(boardId)) return
+
+    const roomParticipants = boardHuddles.get(boardId)
+    roomParticipants.delete(socket.id)
+    socket.leave(`huddle:${boardId}`)
+    socket.currentHuddleBoardId = null
+
+    // Notify peers in the call so they can close RTCPeerConnection and remove the video tile
+    socket.to(`huddle:${boardId}`).emit('huddle:user-left', { socketId: socket.id })
+
+    // Clean up empty room memory
+    if (roomParticipants.size === 0) {
+      boardHuddles.delete(boardId)
+    }
+
+    // Broadcast updated participant list to board room
+    io.to(`board:${boardId}`).emit('huddle:status', {
+      boardId,
+      participants: roomParticipants.size > 0 ? Array.from(roomParticipants.values()) : []
+    })
+
+    // Global broadcast to all connected clients (for "Your Boards" live badge)
+    io.emit('huddle:active-boards', getActiveHuddlesSummary())
+  }
+
+  /**
    * 0. GET ALL ACTIVE HUDDLE BOARDS
    * Used by Dashboard "Your Boards" to render active V-Chat badges on board cards.
    */
@@ -60,14 +90,20 @@ function registerHuddleHandlers(io, socket) {
   /**
    * 2. JOIN HUDDLE
    * When a user clicks "Join Huddle":
-   * 1. They join the `huddle:${boardId}` socket room.
-   * 2. The server sends them `huddle:all-users` (the list of existing callers).
-   * 3. The server broadcasts `huddle:user-joined` to everyone already in the call.
-   * 4. The server broadcasts updated participant count to the board for the navbar.
-   * 5. The server broadcasts updated active huddle boards to all connected clients.
+   * 1. Auto-leaves any previous huddle the socket might have been in (prevents ghost presence leaks).
+   * 2. They join the `huddle:${boardId}` socket room.
+   * 3. The server sends them `huddle:all-users` (the list of existing callers).
+   * 4. The server broadcasts `huddle:user-joined` to everyone already in the call.
+   * 5. The server broadcasts updated participant count to the board for the navbar.
+   * 6. The server broadcasts updated active huddle boards to all connected clients.
    */
   socket.on('huddle:join', ({ boardId, user }) => {
     if (!boardId) return
+
+    // Prevent Ghost Leaks: If socket is already in another board's huddle, leave it cleanly first
+    if (socket.currentHuddleBoardId && socket.currentHuddleBoardId !== boardId) {
+      handleLeaveHuddle()
+    }
 
     socket.join(`board:${boardId}`)
     socket.join(`huddle:${boardId}`)
@@ -82,10 +118,18 @@ function registerHuddleHandlers(io, socket) {
     // Existing peers currently in this call (excluding the newcomer)
     const existingPeers = Array.from(roomParticipants.values())
 
+    // Normalize user identity with safe fallbacks
+    const normalizedUser = {
+      _id: user?._id || socket.id,
+      name: user?.name || user?.username || 'Team Member',
+      avatar: user?.avatar || '',
+      email: user?.email || ''
+    }
+
     // Store the newcomer's info
     const participantInfo = {
       socketId: socket.id,
-      user: user || { _id: socket.id, name: 'Anonymous' },
+      user: normalizedUser,
       isAudioMuted: false,
       isVideoOff: false,
       isScreenSharing: false,
@@ -117,10 +161,14 @@ function registerHuddleHandlers(io, socket) {
    */
   socket.on('huddle:signal', ({ to, signal, fromUser }) => {
     if (!to || !signal) return
+    const sender = socket.currentHuddleBoardId && boardHuddles.has(socket.currentHuddleBoardId)
+      ? boardHuddles.get(socket.currentHuddleBoardId).get(socket.id)
+      : null
+
     io.to(to).emit('huddle:signal', {
       from: socket.id,
       signal,
-      fromUser
+      fromUser: fromUser || sender?.user || { _id: socket.id, name: 'Team Member' }
     })
   })
 
@@ -146,36 +194,6 @@ function registerHuddleHandlers(io, socket) {
       })
     }
   })
-
-  /**
-   * Helper function to cleanly remove a socket from a huddle
-   */
-  const handleLeaveHuddle = () => {
-    const boardId = socket.currentHuddleBoardId
-    if (!boardId || !boardHuddles.has(boardId)) return
-
-    const roomParticipants = boardHuddles.get(boardId)
-    roomParticipants.delete(socket.id)
-    socket.leave(`huddle:${boardId}`)
-    socket.currentHuddleBoardId = null
-
-    // Notify peers in the call so they can close RTCPeerConnection and remove the video tile
-    socket.to(`huddle:${boardId}`).emit('huddle:user-left', { socketId: socket.id })
-
-    // Clean up empty room memory
-    if (roomParticipants.size === 0) {
-      boardHuddles.delete(boardId)
-    }
-
-    // Broadcast updated participant list to board room
-    io.to(`board:${boardId}`).emit('huddle:status', {
-      boardId,
-      participants: roomParticipants.size > 0 ? Array.from(roomParticipants.values()) : []
-    })
-
-    // Global broadcast to all connected clients (for "Your Boards" live badge)
-    io.emit('huddle:active-boards', getActiveHuddlesSummary())
-  }
 
   /**
    * 5. LEAVE HUDDLE
