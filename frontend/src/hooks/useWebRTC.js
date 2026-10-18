@@ -30,15 +30,21 @@ export function useWebRTC({ boardId, user }) {
 
   // Persistent references
   const socketRef = useRef(null)
-  const peersRef = useRef({}) // { [socketId]: { pc: RTCPeerConnection, user: Object, pendingCandidates: Array } }
+  const peersRef = useRef({}) // { [socketId]: { pc: RTCPeerConnection, user: Object, pendingCandidates: Array, disconnectTimer: Timer } }
   const localStreamRef = useRef(null)
   const rawCameraTrackRef = useRef(null)
   const screenTrackRef = useRef(null)
   const userRef = useRef(user)
   userRef.current = user
 
+  const isHuddleActiveRef = useRef(false)
+  isHuddleActiveRef.current = isHuddleActive
+
+  const isScreenSharingRef = useRef(false)
+  isScreenSharingRef.current = isScreenSharing
+
   /**
-   * 1. Adaptive Quality Scaling
+   * 1. Adaptive Quality Scaling & Sender Bitrate Capping
    */
   const applyAdaptiveQuality = useCallback(async (participantCount) => {
     if (!localStreamRef.current || screenTrackRef.current) return
@@ -62,6 +68,22 @@ export function useWebRTC({ boardId, user }) {
     } catch (err) {
       console.warn('[V-Chat] applyConstraints failed:', err)
     }
+
+    // Set maximum bitrate constraints per peer connection to conserve mesh bandwidth
+    Object.values(peersRef.current).forEach(({ pc }) => {
+      try {
+        pc.getSenders().forEach((sender) => {
+          if (sender.track && sender.track.kind === 'video') {
+            const params = sender.getParameters()
+            if (!params.encodings || params.encodings.length === 0) {
+              params.encodings = [{}]
+            }
+            params.encodings[0].maxBitrate = participantCount > 3 ? 350000 : 1200000
+            sender.setParameters(params).catch(() => {})
+          }
+        })
+      } catch (e) {}
+    })
   }, [])
 
   /**
@@ -108,7 +130,28 @@ export function useWebRTC({ boardId, user }) {
   }, [])
 
   /**
-   * 3. Create an RTCPeerConnection for a target peer
+   * 3. Remove a peer cleanly
+   */
+  const handlePeerDisconnect = useCallback((targetSocketId) => {
+    if (peersRef.current[targetSocketId]) {
+      if (peersRef.current[targetSocketId].disconnectTimer) {
+        clearTimeout(peersRef.current[targetSocketId].disconnectTimer)
+      }
+      try {
+        peersRef.current[targetSocketId].pc.close()
+      } catch (err) {}
+      delete peersRef.current[targetSocketId]
+    }
+
+    setPeers((prev) => {
+      const updated = { ...prev }
+      delete updated[targetSocketId]
+      return updated
+    })
+  }, [])
+
+  /**
+   * 4. Create an RTCPeerConnection for a target peer
    */
   const createPeerConnection = useCallback((targetSocketId, targetUser, isInitiator = false) => {
     if (peersRef.current[targetSocketId]?.pc) {
@@ -121,14 +164,26 @@ export function useWebRTC({ boardId, user }) {
     peersRef.current[targetSocketId] = {
       pc,
       user: targetUser,
-      pendingCandidates: []
+      pendingCandidates: [],
+      disconnectTimer: null
     }
 
     // Attach all local tracks to this peer connection
+    let hasVideoSender = false
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => {
+        if (track.kind === 'video') hasVideoSender = true
         pc.addTrack(track, localStreamRef.current)
       })
+    }
+
+    // If call started audio-only, add a video transceiver so screen share / video can be negotiated
+    if (!hasVideoSender) {
+      try {
+        pc.addTransceiver('video', { direction: 'sendrecv' })
+      } catch (err) {
+        console.warn('[V-Chat] addTransceiver video failed:', err)
+      }
     }
 
     // Forward ICE candidates to target peer
@@ -145,29 +200,47 @@ export function useWebRTC({ boardId, user }) {
     // Receive remote tracks and store in stream
     pc.ontrack = (event) => {
       console.log(`[V-Chat] Received remote track (${event.track.kind}) from ${targetSocketId}`)
-      let remoteStream = event.streams?.[0]
-      if (!remoteStream) {
-        remoteStream = new MediaStream([event.track])
-      }
-
-      setPeers((prev) => ({
-        ...prev,
-        [targetSocketId]: {
-          ...(prev[targetSocketId] || {}),
-          socketId: targetSocketId,
-          user: targetUser,
-          stream: remoteStream
+      setPeers((prev) => {
+        const existing = prev[targetSocketId] || {}
+        let remoteStream = event.streams?.[0]
+        if (!remoteStream) {
+          remoteStream = existing.stream || new MediaStream()
+          if (!remoteStream.getTracks().some((t) => t.id === event.track.id)) {
+            remoteStream.addTrack(event.track)
+          }
         }
-      }))
+        return {
+          ...prev,
+          [targetSocketId]: {
+            ...existing,
+            socketId: targetSocketId,
+            user: targetUser || existing.user,
+            stream: remoteStream
+          }
+        }
+      })
     }
 
-    // Monitor connection state
+    // Monitor connection state with grace period on temporary disconnects
     pc.onconnectionstatechange = () => {
       console.log(`[V-Chat] Connection state with ${targetSocketId}:`, pc.connectionState)
       if (pc.connectionState === 'connected') {
         setConnectionStatus('connected')
-      } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+        if (peersRef.current[targetSocketId]?.disconnectTimer) {
+          clearTimeout(peersRef.current[targetSocketId].disconnectTimer)
+          peersRef.current[targetSocketId].disconnectTimer = null
+        }
+      } else if (pc.connectionState === 'failed') {
         handlePeerDisconnect(targetSocketId)
+      } else if (pc.connectionState === 'disconnected') {
+        // Allow a 4-second grace period for temporary network re-routing / ICE recovery
+        if (peersRef.current[targetSocketId] && !peersRef.current[targetSocketId].disconnectTimer) {
+          peersRef.current[targetSocketId].disconnectTimer = setTimeout(() => {
+            if (peersRef.current[targetSocketId]?.pc?.connectionState === 'disconnected') {
+              handlePeerDisconnect(targetSocketId)
+            }
+          }, 4000)
+        }
       }
     }
 
@@ -188,28 +261,117 @@ export function useWebRTC({ boardId, user }) {
     }
 
     return pc
-  }, [])
+  }, [handlePeerDisconnect])
 
   /**
-   * 4. Remove a peer cleanly
+   * 5. Stop Screen Sharing (Revert back to webcam)
    */
-  const handlePeerDisconnect = useCallback((targetSocketId) => {
-    if (peersRef.current[targetSocketId]) {
-      try {
-        peersRef.current[targetSocketId].pc.close()
-      } catch (err) {}
-      delete peersRef.current[targetSocketId]
+  const stopScreenShare = useCallback(() => {
+    if (screenTrackRef.current) {
+      screenTrackRef.current.onended = null
+      screenTrackRef.current.stop()
+      screenTrackRef.current = null
     }
 
-    setPeers((prev) => {
-      const updated = { ...prev }
-      delete updated[targetSocketId]
-      return updated
-    })
-  }, [])
+    const cameraTrack = rawCameraTrackRef.current || localStreamRef.current?.getVideoTracks()[0]
+    if (cameraTrack) {
+      cameraTrack.enabled = true
+
+      // Swap back to camera track on all peer connections
+      Object.values(peersRef.current).forEach(({ pc }) => {
+        const senders = pc.getSenders()
+        const videoSender = senders.find((s) => s.track && s.track.kind === 'video') || senders.find((s) => s.track === null)
+        if (videoSender) {
+          videoSender.replaceTrack(cameraTrack).catch((e) => console.warn('[V-Chat] replaceTrack back to camera failed:', e))
+        }
+      })
+
+      // Restore localStream for local view
+      const cameraStream = new MediaStream([
+        cameraTrack,
+        ...localStreamRef.current.getAudioTracks()
+      ])
+      localStreamRef.current = cameraStream
+      setLocalStream(cameraStream)
+    }
+
+    setIsScreenSharing(false)
+    setIsVideoOff(false)
+
+    if (socketRef.current && isHuddleActiveRef.current) {
+      socketRef.current.emit('huddle:toggle-media', {
+        boardId,
+        isAudioMuted,
+        isVideoOff: false,
+        isScreenSharing: false
+      })
+    }
+  }, [boardId, isAudioMuted])
 
   /**
-   * 5. Join V-Chat Call
+   * 6. Toggle Screen Sharing (Live screen feed + replaceTrack)
+   */
+  const toggleScreenShare = useCallback(async () => {
+    if (!isHuddleActive || !localStreamRef.current) return
+
+    if (isScreenSharingRef.current) {
+      stopScreenShare()
+    } else {
+      // START SCREEN SHARING
+      try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: false
+        })
+
+        const screenTrack = screenStream.getVideoTracks()[0]
+        if (!screenTrack) return
+        screenTrackRef.current = screenTrack
+
+        // Handle native browser "Stop sharing" button click cleanly without loop
+        screenTrack.onended = () => {
+          stopScreenShare()
+        }
+
+        // Pause camera track
+        const cameraTrack = rawCameraTrackRef.current || localStreamRef.current.getVideoTracks()[0]
+        if (cameraTrack) cameraTrack.enabled = false
+
+        // Replace track on all peer connections
+        Object.values(peersRef.current).forEach(({ pc }) => {
+          const senders = pc.getSenders()
+          const videoSender = senders.find((s) => s.track && s.track.kind === 'video') || senders.find((s) => s.track === null)
+          if (videoSender) {
+            videoSender.replaceTrack(screenTrack).catch((e) => console.warn('[V-Chat] replaceTrack to screen failed:', e))
+          }
+        })
+
+        // Update localStream with the screen track so presenter's tile shows the screen!
+        const screenLocalStream = new MediaStream([
+          screenTrack,
+          ...localStreamRef.current.getAudioTracks()
+        ])
+        localStreamRef.current = screenLocalStream
+        setLocalStream(screenLocalStream)
+        setIsScreenSharing(true)
+        setIsVideoOff(false)
+
+        if (socketRef.current) {
+          socketRef.current.emit('huddle:toggle-media', {
+            boardId,
+            isAudioMuted,
+            isVideoOff: false,
+            isScreenSharing: true
+          })
+        }
+      } catch (err) {
+        console.warn('[V-Chat] Screen share was canceled or failed:', err)
+      }
+    }
+  }, [isHuddleActive, boardId, isAudioMuted, stopScreenShare])
+
+  /**
+   * 7. Join V-Chat Call
    */
   const joinHuddle = useCallback(async () => {
     if (isHuddleActive) return
@@ -241,7 +403,7 @@ export function useWebRTC({ boardId, user }) {
   }, [boardId, isHuddleActive, startLocalMedia])
 
   /**
-   * 6. Leave V-Chat Call
+   * 8. Leave V-Chat Call
    */
   const leaveHuddle = useCallback(() => {
     console.log('[V-Chat] Leaving call...')
@@ -259,12 +421,14 @@ export function useWebRTC({ boardId, user }) {
 
     // Stop screen share
     if (screenTrackRef.current) {
+      screenTrackRef.current.onended = null
       screenTrackRef.current.stop()
       screenTrackRef.current = null
     }
 
     // Close all peer connections
-    Object.values(peersRef.current).forEach(({ pc }) => {
+    Object.values(peersRef.current).forEach(({ pc, disconnectTimer }) => {
+      if (disconnectTimer) clearTimeout(disconnectTimer)
       try {
         pc.close()
       } catch (err) {}
@@ -282,7 +446,7 @@ export function useWebRTC({ boardId, user }) {
   }, [])
 
   /**
-   * 7. Toggle Mic Mute
+   * 9. Toggle Mic Mute
    */
   const toggleAudio = useCallback(() => {
     if (!localStreamRef.current) return
@@ -304,7 +468,7 @@ export function useWebRTC({ boardId, user }) {
   }, [boardId, isHuddleActive, isVideoOff, isScreenSharing])
 
   /**
-   * 8. Toggle Camera On/Off
+   * 10. Toggle Camera On/Off
    */
   const toggleVideo = useCallback(() => {
     const videoTrack = rawCameraTrackRef.current || localStreamRef.current?.getVideoTracks()[0]
@@ -325,108 +489,7 @@ export function useWebRTC({ boardId, user }) {
   }, [boardId, isHuddleActive, isAudioMuted, isScreenSharing])
 
   /**
-   * 9. Screen Sharing (Live screen feed + replaceTrack)
-   */
-  const toggleScreenShare = useCallback(async () => {
-    if (!isHuddleActive || !localStreamRef.current) return
-
-    if (isScreenSharing) {
-      // STOP SCREEN SHARING -> Revert back to webcam
-      if (screenTrackRef.current) {
-        screenTrackRef.current.stop()
-        screenTrackRef.current = null
-      }
-
-      const cameraTrack = rawCameraTrackRef.current || localStreamRef.current.getVideoTracks()[0]
-      if (cameraTrack) {
-        cameraTrack.enabled = true
-
-        // Swap back to camera track on all peer connections
-        Object.values(peersRef.current).forEach(({ pc }) => {
-          const senders = pc.getSenders()
-          const videoSender = senders.find((s) => s.track && s.track.kind === 'video') || senders.find((s) => s.track === null)
-          if (videoSender) {
-            videoSender.replaceTrack(cameraTrack)
-          }
-        })
-
-        // Restore localStream for local view
-        const cameraStream = new MediaStream([
-          cameraTrack,
-          ...localStreamRef.current.getAudioTracks()
-        ])
-        localStreamRef.current = cameraStream
-        setLocalStream(cameraStream)
-      }
-
-      setIsScreenSharing(false)
-      setIsVideoOff(false)
-
-      if (socketRef.current) {
-        socketRef.current.emit('huddle:toggle-media', {
-          boardId,
-          isAudioMuted,
-          isVideoOff: false,
-          isScreenSharing: false
-        })
-      }
-    } else {
-      // START SCREEN SHARING
-      try {
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: false
-        })
-
-        const screenTrack = screenStream.getVideoTracks()[0]
-        if (!screenTrack) return
-        screenTrackRef.current = screenTrack
-
-        // Handle native browser "Stop sharing" button click
-        screenTrack.onended = () => {
-          toggleScreenShare()
-        }
-
-        // Pause camera track
-        const cameraTrack = rawCameraTrackRef.current || localStreamRef.current.getVideoTracks()[0]
-        if (cameraTrack) cameraTrack.enabled = false
-
-        // Replace track on all peer connections
-        Object.values(peersRef.current).forEach(({ pc }) => {
-          const senders = pc.getSenders()
-          const videoSender = senders.find((s) => s.track && s.track.kind === 'video') || senders.find((s) => s.track === null)
-          if (videoSender) {
-            videoSender.replaceTrack(screenTrack)
-          }
-        })
-
-        // Update localStream with the screen track so presenter's tile shows the screen!
-        const screenLocalStream = new MediaStream([
-          screenTrack,
-          ...localStreamRef.current.getAudioTracks()
-        ])
-        localStreamRef.current = screenLocalStream
-        setLocalStream(screenLocalStream)
-        setIsScreenSharing(true)
-        setIsVideoOff(false)
-
-        if (socketRef.current) {
-          socketRef.current.emit('huddle:toggle-media', {
-            boardId,
-            isAudioMuted,
-            isVideoOff: false,
-            isScreenSharing: true
-          })
-        }
-      } catch (err) {
-        console.warn('[V-Chat] Screen share was canceled or failed:', err)
-      }
-    }
-  }, [isHuddleActive, isScreenSharing, boardId, isAudioMuted])
-
-  /**
-   * 10. Persistent Socket Lifecycle
-   * Bound solely to boardId. NEVER disconnects on call join/leave!
+   * 11. Persistent Socket Lifecycle
    */
   useEffect(() => {
     if (!boardId) return
@@ -448,9 +511,23 @@ export function useWebRTC({ boardId, user }) {
       }
     })
 
-    // Newcomer gets existing peers -> initiates call to each
+    // Newcomer gets existing peers -> initiates call to each & registers state
     socket.on('huddle:all-users', (existingUsers) => {
       console.log('[V-Chat] Received existing room callers:', existingUsers)
+      setPeers((prev) => {
+        const updated = { ...prev }
+        existingUsers.forEach((peer) => {
+          updated[peer.socketId] = {
+            socketId: peer.socketId,
+            user: peer.user,
+            stream: prev[peer.socketId]?.stream || null,
+            isAudioMuted: peer.isAudioMuted ?? false,
+            isVideoOff: peer.isVideoOff ?? false,
+            isScreenSharing: peer.isScreenSharing ?? false
+          }
+        })
+        return updated
+      })
       existingUsers.forEach((peer) => {
         createPeerConnection(peer.socketId, peer.user, true)
       })
@@ -488,12 +565,17 @@ export function useWebRTC({ boardId, user }) {
         try {
           await pc.setRemoteDescription(new RTCSessionDescription(signal))
 
-          // Process any buffered ICE candidates
+          // Process any buffered ICE candidates safely
           if (peerData?.pendingCandidates?.length > 0) {
-            for (const candidate of peerData.pendingCandidates) {
-              await pc.addIceCandidate(new RTCIceCandidate(candidate))
-            }
+            const candidates = [...peerData.pendingCandidates]
             peerData.pendingCandidates = []
+            for (const candidate of candidates) {
+              try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidate))
+              } catch (e) {
+                console.warn('[V-Chat] Pending candidate error:', e)
+              }
+            }
           }
 
           const answer = await pc.createAnswer()
@@ -512,24 +594,31 @@ export function useWebRTC({ boardId, user }) {
           await pc.setRemoteDescription(new RTCSessionDescription(signal))
 
           if (peerData?.pendingCandidates?.length > 0) {
-            for (const candidate of peerData.pendingCandidates) {
-              await pc.addIceCandidate(new RTCIceCandidate(candidate))
-            }
+            const candidates = [...peerData.pendingCandidates]
             peerData.pendingCandidates = []
+            for (const candidate of candidates) {
+              try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidate))
+              } catch (e) {
+                console.warn('[V-Chat] Pending candidate error:', e)
+              }
+            }
           }
         } catch (err) {
           console.error(`[V-Chat] Error processing answer from ${from}:`, err)
         }
       } else if (signal.type === 'ice-candidate') {
         try {
-          if (pc.remoteDescription) {
+          if (pc.remoteDescription && pc.remoteDescription.type) {
             await pc.addIceCandidate(new RTCIceCandidate(signal.candidate))
           } else {
             if (!peerData.pendingCandidates) peerData.pendingCandidates = []
             peerData.pendingCandidates.push(signal.candidate)
           }
         } catch (err) {
-          console.warn('[V-Chat] addIceCandidate failed:', err)
+          // If remoteDescription is currently resolving, queue candidate
+          if (!peerData.pendingCandidates) peerData.pendingCandidates = []
+          peerData.pendingCandidates.push(signal.candidate)
         }
       }
     })
