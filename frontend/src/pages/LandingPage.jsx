@@ -157,7 +157,7 @@ function LandingPage() {
           </section>
 
           {/* Planner */}
-          <section id="planner" className="mx-auto max-w-[1180px] px-6 py-16 sm:py-20">
+          <section id="planner" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
             <div className="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <Reveal className="min-w-0">
                 <SectionLabel number="02" label="The week" />
@@ -182,13 +182,13 @@ function LandingPage() {
           </section>
 
           {/* Card detail */}
-          <section id="details" className="mx-auto max-w-[1180px] px-6 py-16 sm:py-20">
-            <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
-              <Reveal delay={100} className="order-2 min-w-0 lg:order-1">
+          <section id="details" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
+            <div className="grid items-center gap-12 xl:grid-cols-[1.2fr_0.8fr] xl:gap-16">
+              <Reveal delay={100} className="order-2 mx-auto min-w-0 w-full max-w-[720px] xl:order-1 xl:max-w-none">
                 <CardDetailPreview />
               </Reveal>
 
-              <Reveal className="order-1 min-w-0 lg:order-2">
+              <Reveal className="order-1 min-w-0 xl:order-2">
                 <SectionLabel number="03" label="The card" />
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   The whole story, on one card.
@@ -230,7 +230,7 @@ function LandingPage() {
         </div>
 
         {/* Principles */}
-        <section id="principles" className="border-t border-white/[0.06]">
+        <section id="principles" className="scroll-mt-[88px] border-t border-white/[0.06]">
           <div className="mx-auto max-w-[1180px] px-6 py-20 sm:py-28">
             <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
               <Reveal>
