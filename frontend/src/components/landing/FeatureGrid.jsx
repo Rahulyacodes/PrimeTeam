@@ -3,35 +3,31 @@ import { PEOPLE } from './mockData'
 
 export default function FeatureGrid() {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2">
       <FeatureCard
-        index="01"
-        title="Calls without the calendar link."
-        description="Start a huddle from any board, share a screen, and drop out when you're done. No invite, no room code, no tab graveyard."
+        title="Calls on the board."
+        description="Start a V-Chat, share your screen, and get straight back to the work."
       >
-        <HuddleVisual />
+        <VChatVisual />
       </FeatureCard>
 
       <FeatureCard
-        index="02"
         title="Talk where the card is."
-        description="Mentions, replies, and reactions stay attached to the work. The conversation has a home, and it isn't another channel."
+        description="Comments, @mentions, and replies stay attached to the work."
       >
         <CommentsVisual />
       </FeatureCard>
 
       <FeatureCard
-        index="03"
-        title="The right access, set once."
-        description="Invite by link or username. Admin, member, or viewer — permissions apply immediately and stay out of the way."
+        title="Access, set once."
+        description="Invite by link or username, then pick a role. It applies immediately."
       >
         <AccessVisual />
       </FeatureCard>
 
       <FeatureCard
-        index="04"
         title="Find it before you ask."
-        description="Search every board and card from one field. Notifications tell you what changed, not everything that happened."
+        description="One field searches every board and card. Notifications stay quiet."
       >
         <SearchVisual />
       </FeatureCard>
@@ -39,51 +35,59 @@ export default function FeatureGrid() {
   )
 }
 
-function FeatureCard({ index, title, description, children }) {
+function FeatureCard({ title, description, children }) {
   return (
-    <article className="group flex flex-col rounded-xl border border-white/[0.07] bg-white/[0.012] p-4 transition-colors duration-300 hover:border-white/[0.14]">
-      <div className="relative mb-5 h-[150px] overflow-hidden rounded-lg border border-white/[0.05] bg-[#09090D]">
-        <div className="landing-visual-grid absolute inset-0 opacity-[0.55]" />
-        <div className="relative flex h-full flex-col justify-center p-3.5">{children}</div>
-      </div>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-display text-[16px] font-medium tracking-[-0.02em] text-white/90">{title}</h3>
-          <p className="mt-2 max-w-[42ch] text-[11.5px] leading-[1.7] text-white/50">{description}</p>
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.012] transition-colors duration-300 hover:border-white/[0.16]">
+      <div className="relative flex h-[220px] overflow-hidden border-b border-white/[0.06] bg-[#09090D] p-4">
+        <div className="landing-visual-grid absolute inset-0 opacity-45" />
+        <div className="relative flex w-full flex-col justify-center" aria-hidden="true">
+          {children}
         </div>
-        <span className="mt-0.5 font-mono text-[9px] text-white/20">{index}</span>
+      </div>
+
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <h3 className="font-display text-[17px] font-medium leading-[1.3] tracking-[-0.02em] text-white">
+          {title}
+        </h3>
+        <p className="mt-2 text-[14px] leading-[1.7] text-white/55">{description}</p>
       </div>
     </article>
   )
 }
 
-function HuddleVisual() {
+const PARTICIPANTS = [
+  { person: PEOPLE.sarah, speaking: true, muted: false },
+  { person: PEOPLE.joey, speaking: false, muted: false },
+  { person: PEOPLE.rahulya, speaking: false, muted: true },
+]
+
+function VChatVisual() {
   return (
     <>
-      <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[8px] font-medium text-emerald-300">
+      <div className="flex items-center justify-between gap-3">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-0.5 text-[10.5px] font-medium text-emerald-300">
           <span className="landing-live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          Huddle live · 3
+          V-Chat live
         </span>
-        <span className="font-mono text-[7.5px] uppercase tracking-[0.12em] text-white/20">Board call</span>
+        <span className="text-[10.5px] text-white/30">3 in call</span>
       </div>
 
       <div className="mt-2.5 grid grid-cols-3 gap-1.5">
-        {[
-          { person: PEOPLE.sarah, active: true, muted: false },
-          { person: PEOPLE.joey, active: false, muted: false },
-          { person: PEOPLE.rahulya, active: false, muted: true },
-        ].map(({ person, active, muted }) => (
+        {PARTICIPANTS.map(({ person, speaking, muted }) => (
           <div
             key={person.id}
-            className={`relative flex h-[56px] flex-col items-center justify-center rounded-md border bg-[#111117] ${
-              active ? 'border-emerald-500/50' : 'border-white/[0.06]'
+            className={`relative flex h-[64px] flex-col items-center justify-center rounded-lg border ${
+              speaking
+                ? 'border-emerald-400/30 bg-emerald-400/[0.05]'
+                : 'border-white/[0.07] bg-white/[0.025]'
             }`}
           >
-            <Avatar person={person} size={22} />
-            <span className="mt-1 max-w-full truncate px-1 text-[7.5px] text-white/45">{person.name}</span>
+            <Avatar person={person} size={24} />
+            <span className="mt-1 w-full truncate px-1 text-center text-[10.5px] font-medium text-white/55">
+              {person.name}
+            </span>
             <span
-              className={`absolute right-1 top-1 flex h-3 w-3 items-center justify-center rounded-sm ${
+              className={`absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded ${
                 muted ? 'bg-[#FF6B6B]/15 text-[#FF9B9B]' : 'bg-white/[0.06] text-white/35'
               }`}
             >
@@ -93,23 +97,21 @@ function HuddleVisual() {
         ))}
       </div>
 
-      <div className="mt-2 flex items-center justify-center gap-1">
-        {[<MicIcon key="mic" />, <CamIcon key="cam" />, <ShareIcon key="share" />].map((icon, i) => (
-          <span
-            key={i}
-            className={`flex h-5 w-6 items-center justify-center rounded border ${
-              i === 2
-                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                : 'border-white/[0.07] bg-white/[0.03] text-white/30'
-            }`}
-          >
-            {icon}
-          </span>
-        ))}
-        <span className="flex h-5 w-6 items-center justify-center rounded border border-[#FF6B6B]/25 bg-[#FF6B6B]/10 text-[#FF9B9B]">
-          <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z" />
-          </svg>
+      <div className="mt-2 flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1.5">
+        <div className="flex items-center gap-1.5">
+          <ControlButton>
+            <MicIcon />
+          </ControlButton>
+          <ControlButton>
+            <CamIcon />
+          </ControlButton>
+          <ControlButton active>
+            <ShareIcon />
+          </ControlButton>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#FF6B6B]/20 bg-[#FF6B6B]/[0.08] px-2 py-1 text-[10.5px] font-medium text-[#FF9B9B]">
+          <PhoneOffIcon />
+          Leave
         </span>
       </div>
     </>
@@ -119,40 +121,42 @@ function HuddleVisual() {
 function CommentsVisual() {
   return (
     <>
-      <div className="flex items-center justify-between rounded-md border border-white/[0.06] bg-[#111117] px-2.5 py-1.5">
-        <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#7C6FF7]" />
-          <span className="text-[8.5px] font-medium text-white/60">Checkout redesign</span>
-        </div>
-        <span className="rounded border border-[#7C6FF7]/20 bg-[#7C6FF7]/10 px-1.5 py-0.5 text-[7px] text-[#C3BBFF]">
+      <div className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5">
+        <span className="flex min-w-0 items-center gap-1.5 text-[11px] font-medium text-white/65">
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#7C6FF7]" />
+          <span className="truncate">Checkout redesign</span>
+        </span>
+        <span className="shrink-0 rounded border border-[#7C6FF7]/25 bg-[#7C6FF7]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#C3BBFF]">
           Review
         </span>
       </div>
 
-      <div className="mt-2 flex items-start gap-1.5">
-        <Avatar person={PEOPLE.sarah} size={18} />
-        <div className="min-w-0 flex-1 rounded-md rounded-tl-none border border-white/[0.07] bg-[#15151E] px-2.5 py-2">
+      <div className="mt-2.5 flex items-start gap-2">
+        <Avatar person={PEOPLE.sarah} size={22} />
+        <div className="min-w-0 flex-1 rounded-lg rounded-tl-none border border-white/[0.07] bg-white/[0.03] px-2.5 py-2">
           <div className="flex items-center gap-1.5">
-            <span className="text-[8px] font-medium text-white/70">Sarah Lin</span>
-            <span className="text-[7px] text-white/20">2m</span>
+            <span className="text-[11px] font-medium text-white/75">Sarah Lin</span>
+            <span className="text-[10px] text-white/25">2m</span>
           </div>
-          <p className="mt-1 text-[8.5px] leading-relaxed text-white/45">
-            The new summary needs one more pass. <span className="rounded bg-[#7C6FF7]/10 px-1 text-[#C3BBFF]">@Rahulya</span> can you
-            take a look?
+          <p className="mt-1 text-[11.5px] leading-[1.5] text-white/50">
+            One more pass on the summary.{' '}
+            <span className="rounded bg-[#7C6FF7]/15 px-1 py-0.5 text-[#C3BBFF]">@Rahulya</span> can
+            you check?
           </p>
-          <div className="mt-1.5 flex items-center gap-1">
-            <span className="rounded border border-white/[0.07] bg-white/[0.03] px-1.5 py-0.5 text-[7.5px] text-white/35">👍 2</span>
-            <span className="rounded border border-white/[0.07] bg-white/[0.03] px-1.5 py-0.5 text-[7.5px] text-white/35">✅ 1</span>
-          </div>
         </div>
       </div>
 
-      <div className="mt-2 flex items-center gap-1.5 rounded-md border border-white/[0.07] bg-[#0E0E14] px-2 py-1.5">
-        <span className="flex-1 text-[8px] text-white/20">Reply or @mention…</span>
-        <span className="flex h-3.5 w-3.5 items-center justify-center rounded bg-[#7C6FF7] text-white">
-          <svg className="h-2 w-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
+      <div className="mt-1.5 flex items-center gap-2 pl-7">
+        <Avatar person={PEOPLE.rahulya} size={18} />
+        <span className="rounded-lg rounded-tl-none border border-white/[0.07] bg-white/[0.025] px-2 py-1 text-[11px] text-white/45">
+          On it — shipping tonight.
+        </span>
+      </div>
+
+      <div className="mt-2 flex items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.02] px-2.5 py-1.5">
+        <span className="flex-1 text-[11px] text-white/25">Reply or @mention…</span>
+        <span className="flex h-5 w-5 items-center justify-center rounded bg-[#7C6FF7] text-white">
+          <SendIcon />
         </span>
       </div>
     </>
@@ -161,37 +165,49 @@ function CommentsVisual() {
 
 function AccessVisual() {
   const members = [
-    { person: PEOPLE.rahulya, role: 'Admin', tone: 'border-[#7C6FF7]/25 bg-[#7C6FF7]/10 text-[#C3BBFF]' },
-    { person: PEOPLE.joey, role: 'Member', tone: 'border-white/[0.07] bg-white/[0.03] text-white/45' },
-    { person: PEOPLE.marc, role: 'Viewer', tone: 'border-white/[0.07] bg-white/[0.03] text-white/45' },
+    { person: PEOPLE.rahulya, role: 'Owner', owner: true },
+    { person: PEOPLE.joey, role: 'Member', owner: false },
+    { person: PEOPLE.marc, role: 'Viewer', owner: false },
   ]
 
   return (
     <>
-      <div className="flex items-center justify-between rounded-md border border-white/[0.07] bg-[#111117] px-2.5 py-1.5">
-        <div className="flex items-center gap-1.5">
-          <LockIcon />
-          <span className="text-[8px] text-white/45">primeteam.app/invite/7c9k</span>
-        </div>
-        <span className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[7.5px] font-medium text-white/50">
+      <div className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5">
+        <span className="flex min-w-0 items-center gap-1.5">
+          <LinkIcon />
+          <span className="truncate text-[11px] text-white/50">primeteam.app/invite/7c9k</span>
+        </span>
+        <span className="shrink-0 rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[10px] font-medium text-white/50">
           Copy
         </span>
       </div>
 
       <div className="mt-2 space-y-1">
-        {members.map((member) => (
-          <div key={member.person.id} className="flex items-center justify-between rounded border border-transparent px-1 py-1">
-            <div className="flex items-center gap-2">
-              <Avatar person={member.person} size={18} />
-              <span className="text-[8.5px] font-medium text-white/60">{member.person.name}</span>
-            </div>
-            <span className={`rounded border px-1.5 py-0.5 text-[7px] font-medium ${member.tone}`}>{member.role}</span>
+        {members.map(({ person, role, owner }) => (
+          <div
+            key={person.id}
+            className="flex items-center justify-between rounded-lg border border-transparent bg-white/[0.015] px-2 py-1.5"
+          >
+            <span className="flex items-center gap-2">
+              <Avatar person={person} size={20} />
+              <span className="text-[11px] font-medium text-white/60">{person.name}</span>
+            </span>
+            <span
+              className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${
+                owner
+                  ? 'border-[#7C6FF7]/25 bg-[#7C6FF7]/10 text-[#C3BBFF]'
+                  : 'border-white/[0.07] bg-white/[0.03] text-white/45'
+              }`}
+            >
+              {role}
+            </span>
           </div>
         ))}
       </div>
-      <div className="mt-1.5 border-t border-white/[0.05] pt-1.5 text-center text-[7.5px] text-white/25">
-        Anyone with the link can view
-      </div>
+
+      <p className="mt-1.5 text-center text-[10.5px] text-white/25">
+        Invite link joins instantly
+      </p>
     </>
   )
 }
@@ -199,47 +215,63 @@ function AccessVisual() {
 function SearchVisual() {
   return (
     <>
-      <div className="flex items-center gap-1.5 rounded-md border border-[#7C6FF7]/25 bg-[#0E0E14] px-2.5 py-1.5">
+      <div className="flex items-center gap-2 rounded-lg border border-[#7C6FF7]/25 bg-white/[0.025] px-2.5 py-1.5">
         <SearchIcon />
-        <span className="flex-1 text-[8.5px] text-white/55">checkout</span>
-        <span className="rounded border border-white/[0.07] px-1 py-0.5 font-mono text-[7px] text-white/25">⌘K</span>
+        <span className="flex-1 text-[11px] text-white/55">checkout</span>
+        <span className="rounded border border-white/[0.07] px-1 py-0.5 font-mono text-[10px] text-white/25">
+          ⌘K
+        </span>
       </div>
 
-      <div className="mt-1.5 space-y-1">
-        <div className="flex items-center justify-between rounded border border-white/[0.05] bg-[#111117] px-2 py-1.5">
-          <div className="flex min-w-0 items-center gap-1.5">
+      <div className="mt-2 space-y-1">
+        <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.025] px-2 py-1.5">
+          <span className="flex min-w-0 items-center gap-1.5">
             <CardIcon />
-            <span className="truncate text-[8.5px] text-white/55">
+            <span className="truncate text-[11px] text-white/55">
               <span className="text-white/85">Checkout</span> redesign
             </span>
-          </div>
-          <span className="shrink-0 text-[7px] text-white/20">Product launch</span>
+          </span>
+          <span className="shrink-0 text-[10px] text-white/25">Product launch</span>
         </div>
-        <div className="flex items-center justify-between rounded border border-white/[0.05] bg-[#111117] px-2 py-1.5">
-          <div className="flex min-w-0 items-center gap-1.5">
+        <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.025] px-2 py-1.5">
+          <span className="flex min-w-0 items-center gap-1.5">
             <CardIcon />
-            <span className="truncate text-[8.5px] text-white/55">
+            <span className="truncate text-[11px] text-white/55">
               Mobile <span className="text-white/85">checkout</span> QA
             </span>
-          </div>
-          <span className="shrink-0 text-[7px] text-white/20">Design sprint</span>
+          </span>
+          <span className="shrink-0 text-[10px] text-white/25">Design sprint</span>
         </div>
       </div>
 
-      <div className="mt-1.5 flex items-center gap-1.5 rounded border border-[#7C6FF7]/15 bg-[#7C6FF7]/[0.06] px-2 py-1.5">
-        <span className="h-1 w-1 rounded-full bg-[#7C6FF7]" />
-        <span className="text-[7.5px] text-white/40">
-          <span className="text-white/65">Joey</span> moved Checkout redesign to Review
+      <div className="mt-2 flex items-center gap-1.5 rounded-lg border border-[#7C6FF7]/15 bg-[#7C6FF7]/[0.06] px-2 py-1.5">
+        <span className="h-1 w-1 shrink-0 rounded-full bg-[#7C6FF7]" />
+        <span className="min-w-0 flex-1 truncate text-[10.5px] text-white/40">
+          <span className="text-white/65">Joey</span> moved Checkout to Review
         </span>
-        <span className="ml-auto text-[7px] text-white/20">now</span>
+        <span className="shrink-0 text-[10px] text-white/25">now</span>
       </div>
     </>
   )
 }
 
+function ControlButton({ active = false, children }) {
+  return (
+    <span
+      className={`flex h-7 w-8 items-center justify-center rounded-md border ${
+        active
+          ? 'border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300'
+          : 'border-white/[0.07] bg-white/[0.03] text-white/35'
+      }`}
+    >
+      {children}
+    </span>
+  )
+}
+
 function MicIcon() {
   return (
-    <svg className="h-2 w-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="9" y="2" width="6" height="11" rx="3" />
       <path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8" />
     </svg>
@@ -248,7 +280,7 @@ function MicIcon() {
 
 function MicOffIcon() {
   return (
-    <svg className="h-2 w-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 9v1a3 3 0 0 0 5.1 2.1M15 9V5a3 3 0 0 0-5.9-.7" />
       <path d="M5 10a7 7 0 0 0 11.3 5.5M19 10a7 7 0 0 1-.4 2.3M12 17v4M8 21h8M2 2l20 20" />
     </svg>
@@ -257,7 +289,7 @@ function MicOffIcon() {
 
 function CamIcon() {
   return (
-    <svg className="h-2 w-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2.5" y="6" width="13" height="12" rx="2" />
       <path d="m15.5 10 5-3v10l-5-3" />
     </svg>
@@ -266,25 +298,42 @@ function CamIcon() {
 
 function ShareIcon() {
   return (
-    <svg className="h-2 w-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2.5" y="4" width="19" height="13" rx="2" />
       <path d="M8 21h8M12 17v4" />
     </svg>
   )
 }
 
-function LockIcon() {
+function PhoneOffIcon() {
   return (
-    <svg className="h-2.5 w-2.5 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z" />
+      <path d="m3 3 18 18" />
+    </svg>
+  )
+}
+
+function SendIcon() {
+  return (
+    <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  )
+}
+
+function LinkIcon() {
+  return (
+    <svg className="h-3 w-3 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" />
+      <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
     </svg>
   )
 }
 
 function SearchIcon() {
   return (
-    <svg className="h-2.5 w-2.5 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <svg className="h-3 w-3 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <circle cx="11" cy="11" r="7" />
       <path d="m20 20-3.2-3.2" />
     </svg>
@@ -293,7 +342,7 @@ function SearchIcon() {
 
 function CardIcon() {
   return (
-    <svg className="h-2.5 w-2.5 shrink-0 text-white/25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="h-3 w-3 shrink-0 text-white/25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="3" width="16" height="18" rx="2" />
       <path d="M8 8h8M8 12h5" />
     </svg>

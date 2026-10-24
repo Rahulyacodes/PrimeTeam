@@ -8,7 +8,7 @@ import CardDetailPreview from '../components/landing/CardDetailPreview'
 import FeatureGrid from '../components/landing/FeatureGrid'
 import Reveal from '../components/landing/Reveal'
 
-const CAPABILITIES = ['Boards', 'Planner', 'Comments', 'Huddles', 'Roles', 'Search']
+const CAPABILITIES = ['Boards', 'Planner', 'Comments', 'V-Chat', 'Roles', 'Search']
 
 const PRINCIPLES = [
   {
@@ -216,8 +216,7 @@ function LandingPage() {
                     Small features. Fewer tabs.
                   </h2>
                   <p className="max-w-[430px] text-[14px] leading-[1.75] text-white/50 lg:justify-self-end">
-                    The things you would normally bolt on live where the work already is. No integrations
-                    to wire up, no second inbox to check.
+                    The extras you would normally bolt on already live where the work is.
                   </p>
                 </div>
               </Reveal>
