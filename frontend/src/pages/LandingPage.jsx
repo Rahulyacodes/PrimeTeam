@@ -54,9 +54,9 @@ function LandingPage() {
         {/* Hero */}
         <section className="mx-auto max-w-[1180px] px-6 pb-16 pt-16 sm:pt-20 lg:pb-20 lg:pt-24">
           <div className="max-w-[930px]">
-            <div className="landing-fade-up inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-white/40">
+            <div className="landing-fade-up inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">
               <span className="h-1.5 w-1.5 rounded-full bg-[#7C6FF7]" />
-              Project workspace for small teams
+              Project workspace for teams
             </div>
 
             <h1
@@ -69,7 +69,7 @@ function LandingPage() {
             </h1>
 
             <p
-              className="landing-fade-up mt-7 max-w-[590px] text-[15px] leading-[1.75] text-white/55 sm:text-[16px]"
+              className="landing-fade-up mt-7 max-w-[590px] text-[16px] leading-[1.75] text-white/55"
               style={{ animationDelay: '120ms' }}
             >
               Boards for the work. A planner for the week. Conversation where it belongs.
@@ -82,14 +82,14 @@ function LandingPage() {
             >
               <Link
                 to={user ? '/' : '/register'}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[13.5px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[14px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
               >
                 {user ? 'Open dashboard' : 'Start for free'}
                 <ArrowIcon />
               </Link>
               <a
                 href="#product"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[13.5px] font-medium text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7]"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7]"
               >
                 See how it works
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -99,7 +99,7 @@ function LandingPage() {
             </div>
 
             <p
-              className="landing-fade-up mt-6 font-mono text-[9px] uppercase tracking-[0.16em] text-white/30"
+              className="landing-fade-up mt-6 font-mono text-[12px] uppercase tracking-[0.16em] text-white/35"
               style={{ animationDelay: '240ms' }}
             >
               Free forever <span className="px-1.5 text-white/10">·</span> No credit card
@@ -109,7 +109,7 @@ function LandingPage() {
 
           {/* Board preview */}
           <div className="landing-fade-up mt-14 sm:mt-16" style={{ animationDelay: '300ms' }}>
-            <div className="mb-3 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.18em] text-white/25">
+            <div className="mb-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">
               <span className="flex items-center gap-2">
                 <span className="landing-live-dot h-1 w-1 rounded-full bg-emerald-400" />
                 Live board preview
@@ -123,17 +123,17 @@ function LandingPage() {
         {/* Capability strip */}
         <div className="border-y border-white/[0.06] bg-white/[0.008]">
           <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
-            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/50">
+            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
               Inside PrimeTeam
             </span>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               {CAPABILITIES.map((capability) => (
-                <span key={capability} className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/35">
+                <span key={capability} className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/45">
                   {capability}
                 </span>
               ))}
             </div>
-            <span className="ml-auto hidden font-mono text-[9px] uppercase tracking-[0.14em] text-white/20 sm:inline">
+            <span className="ml-auto hidden font-mono text-[11px] uppercase tracking-[0.14em] text-white/30 sm:inline">
               One workspace. No add-ons.
             </span>
           </div>
@@ -148,7 +148,7 @@ function LandingPage() {
                 <h2 className="max-w-[620px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
                   The work, without the busywork.
                 </h2>
-                <p className="max-w-[440px] text-[14px] leading-[1.75] text-white/50 lg:justify-self-end">
+                <p className="max-w-[440px] text-[15px] leading-[1.75] text-white/55 lg:justify-self-end">
                   Two views carry the week. The board shows what is moving. The planner shows when.
                   Everything else lives one click away, not one tab away.
                 </p>
@@ -158,13 +158,13 @@ function LandingPage() {
 
           {/* Planner */}
           <section id="planner" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
-            <div className="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+            <div className="grid items-center gap-12 xl:grid-cols-[0.78fr_1.22fr] xl:gap-16">
               <Reveal className="min-w-0">
                 <SectionLabel number="02" label="The week" />
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   See the week before it sees you.
                 </h2>
-                <p className="mt-5 max-w-[420px] text-[14px] leading-[1.75] text-white/50">
+                <p className="mt-5 max-w-[420px] text-[15px] leading-[1.75] text-white/55">
                   Every card with a date lands on the planner automatically. Overdue work surfaces first,
                   today stays obvious, and the rest of the week is right there.
                 </p>
@@ -181,6 +181,9 @@ function LandingPage() {
             </div>
           </section>
 
+          {/* Section divider */}
+          <div aria-hidden="true" className="border-t border-white/[0.06]" />
+
           {/* Card detail */}
           <section id="details" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
             <div className="grid items-center gap-12 xl:grid-cols-[1.2fr_0.8fr] xl:gap-16">
@@ -193,7 +196,7 @@ function LandingPage() {
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   The whole story, on one card.
                 </h2>
-                <p className="mt-5 max-w-[420px] text-[14px] leading-[1.75] text-white/50">
+                <p className="mt-5 max-w-[420px] text-[15px] leading-[1.75] text-white/55">
                   Assign an owner, set a date, attach the brief. Break the work into a checklist, leave a
                   comment, and move it forward — without opening another app.
                 </p>
@@ -215,7 +218,7 @@ function LandingPage() {
                   <h2 className="max-w-[520px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
                     Small features. Fewer tabs.
                   </h2>
-                  <p className="max-w-[430px] text-[14px] leading-[1.75] text-white/50 lg:justify-self-end">
+                  <p className="max-w-[430px] text-[15px] leading-[1.75] text-white/55 lg:justify-self-end">
                     The extras you would normally bolt on already live where the work is.
                   </p>
                 </div>
@@ -244,12 +247,12 @@ function LandingPage() {
                 <div className="border-t border-white/[0.07]">
                   {PRINCIPLES.map((principle) => (
                     <div key={principle.number} className="grid grid-cols-[40px_1fr] gap-4 border-b border-white/[0.07] py-6 sm:grid-cols-[56px_1fr]">
-                      <span className="font-mono text-[10px] text-white/20">{principle.number}</span>
+                      <span className="font-mono text-[11px] text-white/35">{principle.number}</span>
                       <div>
-                        <h3 className="font-display text-[17px] font-medium tracking-[-0.02em] text-white/85">
+                        <h3 className="font-display text-[18px] font-medium tracking-[-0.02em] text-white/90">
                           {principle.title}
                         </h3>
-                        <p className="mt-2 max-w-[460px] text-[13px] leading-[1.7] text-white/45">
+                        <p className="mt-2 max-w-[460px] text-[15px] leading-[1.7] text-white/55">
                           {principle.body}
                         </p>
                       </div>
@@ -284,14 +287,14 @@ function LandingPage() {
               <h2 className="mt-5 max-w-[720px] font-display text-[40px] font-medium leading-[1.02] tracking-[-0.045em] text-white sm:text-[60px]">
                 Give your team a quieter week.
               </h2>
-              <p className="mt-5 max-w-[520px] text-[14px] leading-[1.75] text-white/50">
+              <p className="mt-5 max-w-[520px] text-[15px] leading-[1.75] text-white/55">
                 Create a board, invite the people who need it, and move the first card. That is the
                 whole setup.
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <Link
                   to={user ? '/' : '/register'}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[13.5px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[14px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
                 >
                   {user ? 'Open your dashboard' : 'Create your first board'}
                   <ArrowIcon />
@@ -299,13 +302,13 @@ function LandingPage() {
                 {!user && (
                   <Link
                     to="/login"
-                    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[13.5px] font-medium text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
                   >
                     Sign in
                   </Link>
                 )}
               </div>
-              <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.16em] text-white/30">
+              <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">
                 Free forever <span className="px-1.5 text-white/10">·</span> No credit card
                 <span className="px-1.5 text-white/10">·</span> No setup call
               </p>
@@ -320,9 +323,9 @@ function LandingPage() {
             <div>
               <Link to="/" className="inline-flex items-center gap-2.5 text-white" aria-label="PrimeTeam home">
                 <StatusBarsLogo size={24} />
-                <span className="font-display text-[16px] font-semibold tracking-[-0.02em]">PrimeTeam</span>
+                <span className="font-display text-[17px] font-semibold tracking-[-0.02em]">PrimeTeam</span>
               </Link>
-              <p className="mt-4 max-w-[240px] text-[12px] leading-[1.7] text-white/35">
+              <p className="mt-4 max-w-[240px] text-[13px] leading-[1.7] text-white/45">
                 A quieter place to plan the week, move the work, and keep the team close.
               </p>
             </div>
@@ -358,7 +361,7 @@ function LandingPage() {
             </FooterColumn>
           </div>
 
-          <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 font-mono text-[9px] uppercase tracking-[0.14em] text-white/20 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-white/35 sm:flex-row sm:items-center sm:justify-between">
             <span>© {new Date().getFullYear()} PrimeTeam. All rights reserved.</span>
             <span className="inline-flex items-center gap-1.5">
               <span>Built for teams, by</span>
@@ -383,7 +386,7 @@ function LandingPage() {
 
 function SectionLabel({ number, label }) {
   return (
-    <div className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.2em] text-white/30">
+    <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
       <span className="text-[#B7ADF6]/80">{number}</span>
       <span className="h-px w-5 bg-[#7C6FF7]/50" />
       <span>{label}</span>
@@ -393,7 +396,7 @@ function SectionLabel({ number, label }) {
 
 function FeaturePoint({ children }) {
   return (
-    <li className="flex items-start gap-3 text-[13px] leading-[1.65] text-white/50">
+    <li className="flex items-start gap-3 text-[14px] leading-[1.65] text-white/55">
       <span className="mt-[7px] flex h-3 w-3 shrink-0 items-center justify-center rounded-[3px] border border-[#7C6FF7]/30 bg-[#7C6FF7]/10">
         <svg className="h-1.5 w-1.5 text-[#B7ADF6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 6 9 17l-5-5" />
@@ -415,14 +418,14 @@ function ArrowIcon() {
 function FooterColumn({ title, children }) {
   return (
     <div>
-      <h3 className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/30">{title}</h3>
+      <h3 className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">{title}</h3>
       <ul className="mt-4 space-y-2.5">{children}</ul>
     </div>
   )
 }
 
 function FooterLink({ href, to, external = false, children }) {
-  const className = 'text-[12px] text-white/50 transition-colors hover:text-white'
+  const className = 'text-[13px] text-white/55 transition-colors hover:text-white'
 
   if (to) {
     return (

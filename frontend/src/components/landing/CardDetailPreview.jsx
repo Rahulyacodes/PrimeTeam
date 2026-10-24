@@ -24,14 +24,14 @@ export default function CardDetailPreview() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-3 border-b border-[#2A2A38] bg-[#161620] px-4 py-2.5 sm:px-5">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A4D] bg-[#252533] px-2.5 py-1.5 text-[10px] font-semibold">
+            <span className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A4D] bg-[#252533] px-2.5 py-1.5 text-[12px] font-semibold">
               <span className="text-purple-400">Done</span>
               <ChevronDownIcon className="h-2.5 w-2.5 text-gray-400" />
             </span>
           </div>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <span className="hidden items-center gap-1.5 rounded-xl border border-[#3A3A4D]/50 bg-[#252533]/60 px-2 py-1 text-[8.5px] font-medium text-gray-400 sm:flex">
+            <span className="hidden items-center gap-1.5 rounded-xl border border-[#3A3A4D]/50 bg-[#252533]/60 px-2 py-1 text-[11px] font-medium text-gray-400 sm:flex">
               <ClockIcon className="h-2.5 w-2.5 text-gray-500" />
               Created 16 Aug 2026, 01:06
             </span>
@@ -49,7 +49,7 @@ export default function CardDetailPreview() {
                 <CheckIcon className="h-3 w-3" />
               </span>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <h3 className="truncate text-[16px] font-bold tracking-[-0.01em] text-white">
+                <h3 className="truncate text-[18px] font-bold tracking-[-0.01em] text-white">
                   Checkout redesign
                 </h3>
                 <PencilIcon className="h-3 w-3 shrink-0 text-gray-500" />
@@ -68,7 +68,7 @@ export default function CardDetailPreview() {
             {/* Members, labels, due date */}
             <div className="flex flex-wrap items-start gap-x-3 gap-y-3 pt-0.5">
               <div>
-                <span className="block text-[8px] font-semibold uppercase text-gray-400">Members</span>
+                <span className="block text-[11px] font-semibold uppercase text-gray-400">Members</span>
                 <div className="mt-1 flex items-center">
                   {MEMBERS.map((person, index) => (
                     <span
@@ -81,19 +81,19 @@ export default function CardDetailPreview() {
                       <img src={person.avatar} alt="" className="h-full w-full rounded-full object-contain" />
                     </span>
                   ))}
-                  <span className="-ml-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#161620] bg-[#252538] text-[9px] font-bold text-purple-300">
+                  <span className="-ml-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#161620] bg-[#252538] text-[11px] font-bold text-purple-300">
                     +1
                   </span>
                 </div>
               </div>
 
               <div className="min-w-0">
-                <span className="block text-[8px] font-semibold uppercase text-gray-400">Labels</span>
+                <span className="block text-[11px] font-semibold uppercase text-gray-400">Labels</span>
                 <div className="mt-1 flex flex-wrap items-center gap-1">
                   {LABELS.map((label) => (
                     <span
                       key={label.name}
-                      className="rounded-lg px-1.5 py-[3px] text-[8px] font-semibold text-white shadow-sm"
+                      className="rounded-lg px-1.5 py-[3px] text-[11px] font-semibold text-white shadow-sm"
                       style={{ backgroundColor: label.color }}
                     >
                       {label.name}
@@ -103,8 +103,8 @@ export default function CardDetailPreview() {
               </div>
 
               <div>
-                <span className="block text-[8px] font-semibold uppercase text-gray-400">Due Date</span>
-                <span className="mt-1 inline-flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/20 px-2 py-1 text-[9px] font-semibold text-emerald-300 shadow-sm">
+                <span className="block text-[11px] font-semibold uppercase text-gray-400">Due Date</span>
+                <span className="mt-1 inline-flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/20 px-2 py-1 text-[11px] font-semibold text-emerald-300 shadow-sm">
                   <CheckIcon className="h-2.5 w-2.5" />
                   24 Aug
                 </span>
@@ -116,13 +116,13 @@ export default function CardDetailPreview() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-gray-300">
                   <DescriptionIcon className="h-3.5 w-3.5" />
-                  <span className="text-[11px] font-bold">Description</span>
+                  <span className="text-[13px] font-bold">Description</span>
                 </div>
-                <span className="rounded-xl border border-[#3A3A4D] bg-[#252533] px-2 py-1 text-[8.5px] font-semibold text-gray-300">
+                <span className="rounded-xl border border-[#3A3A4D] bg-[#252533] px-2 py-1 text-[11px] font-semibold text-gray-300">
                   Edit
                 </span>
               </div>
-              <div className="min-h-[56px] rounded-2xl border border-[#2A2A38] bg-[#121218] p-3 text-[10px] leading-[1.6] text-gray-400">
+              <div className="min-h-[56px] rounded-2xl border border-[#2A2A38] bg-[#121218] p-3 text-[12px] leading-[1.6] text-gray-400">
                 A two-step checkout for returning customers, with clear recovery when a payment fails.
               </div>
             </div>
@@ -132,11 +132,11 @@ export default function CardDetailPreview() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-gray-300">
                   <ChecklistIcon className="h-3.5 w-3.5" />
-                  <span className="text-[11px] font-bold">Launch checklist</span>
+                  <span className="text-[13px] font-bold">Launch checklist</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-semibold text-purple-400">2/3 (67%)</span>
-                  <span className="rounded-lg bg-red-500/10 px-2 py-0.5 text-[8.5px] font-medium text-red-400">
+                  <span className="text-[11px] font-semibold text-purple-400">2/3 (67%)</span>
+                  <span className="rounded-lg bg-red-500/10 px-2 py-0.5 text-[11px] font-medium text-red-400">
                     Delete
                   </span>
                 </div>
@@ -163,7 +163,7 @@ export default function CardDetailPreview() {
                       >
                         <CheckIcon className="h-2 w-2" />
                       </span>
-                      <span className={`truncate text-[9px] ${item.done ? 'text-gray-500 line-through' : 'text-gray-200'}`}>
+                      <span className={`truncate text-[11px] ${item.done ? 'text-gray-500 line-through' : 'text-gray-200'}`}>
                         {item.label}
                       </span>
                     </div>
@@ -173,10 +173,10 @@ export default function CardDetailPreview() {
               </div>
 
               <div className="flex items-center gap-2 pt-0.5">
-                <div className="flex-1 rounded-xl border border-[#2A2A38] bg-[#121218] px-2.5 py-1.5 text-[9px] text-gray-500">
+                <div className="flex-1 rounded-xl border border-[#2A2A38] bg-[#121218] px-2.5 py-1.5 text-[11px] text-gray-500">
                   Add an item...
                 </div>
-                <span className="rounded-xl border-2 border-purple-500 px-2.5 py-1 text-[9px] font-bold text-purple-300">
+                <span className="rounded-xl border-2 border-purple-500 px-2.5 py-1 text-[11px] font-bold text-purple-300">
                   Add
                 </span>
               </div>
@@ -185,19 +185,19 @@ export default function CardDetailPreview() {
           </div>
 
           {/* Comments and activity */}
-          <aside className="hidden w-[240px] shrink-0 flex-col justify-between border-l border-[#2A2A38] bg-[#161620] p-4 sm:flex">
+          <aside className="hidden w-[260px] shrink-0 flex-col justify-between border-l border-[#2A2A38] bg-[#161620] p-4 sm:flex">
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2 border-b border-[#2A2A38] pb-3">
                 <div className="flex min-w-0 items-center gap-1.5 text-gray-300">
                   <CommentIcon className="h-3.5 w-3.5 shrink-0" />
-                  <span className="whitespace-nowrap text-[10px] font-bold text-gray-200">Comments and activity</span>
+                  <span className="whitespace-nowrap text-[12px] font-bold text-gray-200">Comments and activity</span>
                 </div>
-                <span className="shrink-0 rounded-xl border border-[#3A3A4D] bg-[#252533] px-1.5 py-1 text-[7.5px] font-semibold text-gray-300">
+                <span className="shrink-0 rounded-xl border border-[#3A3A4D] bg-[#252533] px-1.5 py-1 text-[11px] font-semibold text-gray-300">
                   Hide details
                 </span>
               </div>
 
-              <div className="min-h-[56px] rounded-xl border border-[#2A2A38] bg-[#121218] p-3 text-[9px] text-gray-500">
+              <div className="min-h-[56px] rounded-xl border border-[#2A2A38] bg-[#121218] p-3 text-[11px] text-gray-500">
                 Write a comment...
               </div>
 
@@ -206,11 +206,11 @@ export default function CardDetailPreview() {
                   <img src={PEOPLE.joey.avatar} alt="" className="h-full w-full rounded-full object-contain" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[9px] leading-tight text-gray-400">
+                  <p className="text-[11px] leading-tight text-gray-400">
                     <span className="font-semibold text-gray-200">Joey</span> added this card to{' '}
                     <span className="font-medium text-purple-300">Done</span>
                   </p>
-                  <span className="text-[8px] text-gray-500">18 Aug, 11:20</span>
+                  <span className="text-[11px] text-gray-500">18 Aug, 11:20</span>
                 </div>
               </div>
 
@@ -220,10 +220,10 @@ export default function CardDetailPreview() {
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[9px] font-semibold text-gray-200">Sarah</span>
-                    <span className="text-[8px] text-gray-500">2h</span>
+                    <span className="text-[11px] font-semibold text-gray-200">Sarah</span>
+                    <span className="text-[11px] text-gray-500">2h</span>
                   </div>
-                  <p className="mt-1 text-[9px] leading-[1.5] text-gray-400">
+                  <p className="mt-1 text-[11px] leading-[1.5] text-gray-400">
                     Two-step flow is ready. QA on Safari is the last step.
                   </p>
                 </div>
@@ -231,11 +231,11 @@ export default function CardDetailPreview() {
             </div>
 
             <div className="flex items-center justify-between border-t border-[#2A2A38] pt-3">
-              <span className="flex items-center gap-1.5 font-mono text-[9px] text-emerald-300">
+              <span className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-300">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Saved
               </span>
-              <span className="rounded-xl border-2 border-purple-500 px-3 py-1 text-[9px] font-bold text-purple-300">
+              <span className="rounded-xl border-2 border-purple-500 px-3 py-1 text-[11px] font-bold text-purple-300">
                 Done
               </span>
             </div>
@@ -248,7 +248,7 @@ export default function CardDetailPreview() {
 
 function ActionPill({ icon, label }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-xl border border-[#2A2A38] bg-[#121218] px-2 py-1.5 text-[8.5px] font-semibold text-gray-300">
+    <span className="inline-flex items-center gap-1 rounded-xl border border-[#2A2A38] bg-[#121218] px-2 py-1.5 text-[11px] font-semibold text-gray-300">
       {icon}
       {label}
     </span>

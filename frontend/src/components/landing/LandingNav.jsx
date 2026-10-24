@@ -50,7 +50,7 @@ export default function LandingNav() {
             <a
               key={link.href}
               href={link.href}
-              className="text-[13px] text-white/45 transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white"
+              className="text-[14px] text-white/45 transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white"
             >
               {link.label}
             </a>
@@ -61,7 +61,7 @@ export default function LandingNav() {
           {user ? (
             <Link
               to="/"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-4 py-2 text-[13px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-4 py-2 text-[14px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
             >
               Open dashboard
               <ArrowIcon />
@@ -70,13 +70,13 @@ export default function LandingNav() {
             <>
               <Link
                 to="/login"
-                className="px-2 py-2 text-[13px] text-white/50 transition-colors hover:text-white"
+                className="px-2 py-2 text-[14px] text-white/50 transition-colors hover:text-white"
               >
                 Sign in
               </Link>
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-4 py-2 text-[13px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-4 py-2 text-[14px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
               >
                 Start free
                 <ArrowIcon />

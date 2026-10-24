@@ -53,7 +53,7 @@ function TaskCard({
     >
       <div className="flex items-start justify-between gap-2">
         <p
-          className={`text-[11.5px] font-medium leading-[1.35] tracking-[-0.01em] ${
+          className={`text-[13px] font-medium leading-[1.35] tracking-[-0.01em] ${
             completed ? 'text-white/40 line-through' : 'text-white/90'
           }`}
         >
@@ -67,11 +67,11 @@ function TaskCard({
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <span className={`inline-flex items-center rounded border px-1.5 py-[2px] text-[8.5px] font-medium ${PRIORITY_STYLES[tone] || PRIORITY_STYLES.low}`}>
+        <span className={`inline-flex items-center rounded border px-1.5 py-[2px] text-[11px] font-medium ${PRIORITY_STYLES[tone] || PRIORITY_STYLES.low}`}>
           {tone === 'done' ? 'Done' : tone.charAt(0).toUpperCase() + tone.slice(1)}
         </span>
         {due && (
-          <span className={`inline-flex items-center gap-1 text-[8.5px] ${overdue ? 'font-medium text-[#FF9B9B]' : 'text-white/35'}`}>
+          <span className={`inline-flex items-center gap-1 text-[11px] ${overdue ? 'font-medium text-[#FF9B9B]' : 'text-white/35'}`}>
             {overdue && <span className="h-1 w-1 rounded-full bg-[#FF6B6B]" />}
             {due}
           </span>
@@ -80,7 +80,7 @@ function TaskCard({
 
       {typeof progress === 'number' && (
         <div className="mt-2.5">
-          <div className="flex items-center justify-between text-[8.5px] text-white/30">
+          <div className="flex items-center justify-between text-[11px] text-white/40">
             <span>Progress</span>
             <span className="font-mono">{progress}%</span>
           </div>
@@ -94,10 +94,10 @@ function TaskCard({
         <div className="mt-2.5 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             {person && <Avatar person={person} size={18} />}
-            {person && <span className="text-[9px] text-white/35">{person.name}</span>}
+            {person && <span className="text-[11px] text-white/45">{person.name}</span>}
           </div>
           {comments && (
-            <span className="inline-flex items-center gap-1 text-[9px] text-white/30">
+            <span className="inline-flex items-center gap-1 text-[11px] text-white/40">
               <CommentIcon className="h-2.5 w-2.5" />
               {comments}
             </span>
@@ -111,16 +111,16 @@ function TaskCard({
 function BoardColumn({ title, count, onAdd, children, innerRef, highlight = false }) {
   return (
     <section
-      className={`flex min-h-[318px] flex-col rounded-[10px] border p-2.5 ${
+      className={`flex min-h-[340px] flex-col rounded-[10px] border p-2.5 ${
         highlight ? 'border-[#7C6FF7]/20 bg-[#7C6FF7]/[0.035]' : 'border-white/[0.055] bg-[#0D0D14]'
       }`}
     >
       <header className="mb-2.5 flex items-center justify-between px-0.5">
         <div className="flex items-center gap-1.5">
-          <span className={`text-[9.5px] font-medium uppercase tracking-[0.12em] ${highlight ? 'text-[#C3BBFF]' : 'text-white/45'}`}>
+          <span className={`text-[11px] font-medium uppercase tracking-[0.12em] ${highlight ? 'text-[#C3BBFF]' : 'text-white/45'}`}>
             {title}
           </span>
-          <span className="font-mono text-[9px] text-white/25">{count}</span>
+          <span className="font-mono text-[11px] text-white/35">{count}</span>
         </div>
         <button type="button" tabIndex={-1} className="text-white/20" aria-hidden="true">
           <PlusIcon className="h-3 w-3" />
@@ -133,7 +133,7 @@ function BoardColumn({ title, count, onAdd, children, innerRef, highlight = fals
           type="button"
           tabIndex={-1}
           aria-hidden="true"
-          className="mt-auto flex items-center gap-1 rounded-md border border-dashed border-white/[0.06] px-2 py-1.5 text-[9px] text-white/20"
+          className="mt-auto flex items-center gap-1 rounded-md border border-dashed border-white/[0.06] px-2 py-1.5 text-[11px] text-white/35"
         >
           <PlusIcon className="h-2.5 w-2.5" />
           {onAdd}
@@ -265,18 +265,18 @@ export default function HeroBoard() {
               <span className="hidden text-[11px] text-white/15 sm:inline">/</span>
             </div>
             <div className="flex min-w-0 items-center gap-1.5">
-              <span className="truncate text-[11.5px] font-semibold text-white/90">Product launch</span>
+              <span className="truncate text-[13px] font-semibold text-white/90">Product launch</span>
               <svg className="h-3 w-3 shrink-0 text-white/15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="m12 3 2.7 5.6 6.3.9-4.5 4.4 1 6.1-5.5-2.9-5.5 2.9 1-6.1L3 9.5l6.3-.9L12 3Z" />
               </svg>
             </div>
 
             <div className="ml-4 hidden items-center gap-4 sm:flex">
-              <span className="border-b border-[#7C6FF7] pb-[18px] pt-[18px] text-[10.5px] font-medium text-white">
+              <span className="border-b border-[#7C6FF7] pb-[18px] pt-[18px] text-[13px] font-medium text-white">
                 Board
               </span>
-              <span className="pb-[18px] pt-[18px] text-[10.5px] text-white/30">Planner</span>
-              <span className="hidden pb-[18px] pt-[18px] text-[10.5px] text-white/30 md:inline">Activity</span>
+              <span className="pb-[18px] pt-[18px] text-[13px] text-white/40">Planner</span>
+              <span className="hidden pb-[18px] pt-[18px] text-[13px] text-white/40 md:inline">Activity</span>
             </div>
 
             <div className="ml-auto flex items-center gap-2">
@@ -286,7 +286,7 @@ export default function HeroBoard() {
               <button
                 type="button"
                 tabIndex={-1}
-                className="hidden items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-medium text-white/60 sm:flex"
+                className="hidden items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-medium text-white/60 sm:flex"
               >
                 <ShareIcon />
                 Share
@@ -429,7 +429,7 @@ export default function HeroBoard() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-4 border-t border-white/[0.06] px-3.5 py-2 font-mono text-[8.5px] uppercase tracking-[0.14em] text-white/25 sm:px-4">
+              <div className="flex items-center justify-between gap-4 border-t border-white/[0.06] px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-white/35 sm:px-4">
                 <span className="flex items-center gap-2">
                   <span className="h-1 w-1 rounded-full bg-[#7C6FF7]" />
                   4 lists · 9 cards
@@ -455,15 +455,15 @@ export default function HeroBoard() {
               }}
             >
               <div className="relative -rotate-2 scale-[1.035] rounded-[9px] border border-[#7C6FF7] bg-[#171722] p-3 shadow-[0_18px_50px_rgba(0,0,0,0.8),0_0_0_1px_rgba(124,111,247,0.35)]">
-                <p className="text-[11.5px] font-medium leading-[1.35] text-white/95">{ghostMeta.title}</p>
+                <p className="text-[13px] font-medium leading-[1.35] text-white/95">{ghostMeta.title}</p>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className={`inline-flex items-center rounded border px-1.5 py-[2px] text-[8.5px] font-medium ${PRIORITY_STYLES[ghostMeta.tone]}`}>
+                  <span className={`inline-flex items-center rounded border px-1.5 py-[2px] text-[11px] font-medium ${PRIORITY_STYLES[ghostMeta.tone]}`}>
                     {ghostMeta.tone === 'medium' ? 'Medium' : 'Low'}
                   </span>
                   <Avatar person={ghostMeta.person} size={17} />
                 </div>
 
-                <div className="absolute -bottom-3.5 -right-2 flex items-center gap-1 rounded-full border border-white/20 bg-[#7C6FF7] px-1.5 py-0.5 text-[8px] font-medium text-white shadow-lg">
+                <div className="absolute -bottom-3.5 -right-2 flex items-center gap-1 rounded-full border border-white/20 bg-[#7C6FF7] px-1.5 py-0.5 text-[11px] font-medium text-white shadow-lg">
                   <svg className="h-2.5 w-2.5 -rotate-12" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3.1 2.5a.75.75 0 0 1 1-.4l16.5 7.5a.75.75 0 0 1 0 1.4l-6.5 2.9-3 6.5a.75.75 0 0 1-1.4 0l-7.5-16.5a.75.75 0 0 1 .9-1.4Z" />
                   </svg>

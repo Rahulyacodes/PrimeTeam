@@ -46,10 +46,10 @@ function FeatureCard({ title, description, children }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <h3 className="font-display text-[17px] font-medium leading-[1.3] tracking-[-0.02em] text-white">
+        <h3 className="font-display text-[18px] font-medium leading-[1.3] tracking-[-0.02em] text-white">
           {title}
         </h3>
-        <p className="mt-2 text-[14px] leading-[1.7] text-white/55">{description}</p>
+        <p className="mt-2 text-[15px] leading-[1.7] text-white/55">{description}</p>
       </div>
     </article>
   )
@@ -65,11 +65,11 @@ function VChatVisual() {
   return (
     <>
       <div className="flex items-center justify-between gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-0.5 text-[10.5px] font-medium text-emerald-300">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-0.5 text-[11px] font-medium text-emerald-300">
           <span className="landing-live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" />
           V-Chat live
         </span>
-        <span className="text-[10.5px] text-white/30">3 in call</span>
+        <span className="text-[11px] text-white/30">3 in call</span>
       </div>
 
       <div className="mt-2.5 grid grid-cols-3 gap-1.5">
@@ -83,7 +83,7 @@ function VChatVisual() {
             }`}
           >
             <Avatar person={person} size={24} />
-            <span className="mt-1 w-full truncate px-1 text-center text-[10.5px] font-medium text-white/55">
+            <span className="mt-1 w-full truncate px-1 text-center text-[11px] font-medium text-white/55">
               {person.name}
             </span>
             <span
@@ -109,7 +109,7 @@ function VChatVisual() {
             <ShareIcon />
           </ControlButton>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#FF6B6B]/20 bg-[#FF6B6B]/[0.08] px-2 py-1 text-[10.5px] font-medium text-[#FF9B9B]">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#FF6B6B]/20 bg-[#FF6B6B]/[0.08] px-2 py-1 text-[11px] font-medium text-[#FF9B9B]">
           <PhoneOffIcon />
           Leave
         </span>
@@ -126,7 +126,7 @@ function CommentsVisual() {
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#7C6FF7]" />
           <span className="truncate">Checkout redesign</span>
         </span>
-        <span className="shrink-0 rounded border border-[#7C6FF7]/25 bg-[#7C6FF7]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#C3BBFF]">
+        <span className="shrink-0 rounded border border-[#7C6FF7]/25 bg-[#7C6FF7]/10 px-1.5 py-0.5 text-[11px] font-medium text-[#C3BBFF]">
           Review
         </span>
       </div>
@@ -136,9 +136,9 @@ function CommentsVisual() {
         <div className="min-w-0 flex-1 rounded-lg rounded-tl-none border border-white/[0.07] bg-white/[0.03] px-2.5 py-2">
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-medium text-white/75">Sarah Lin</span>
-            <span className="text-[10px] text-white/25">2m</span>
+            <span className="text-[11px] text-white/25">2m</span>
           </div>
-          <p className="mt-1 text-[11.5px] leading-[1.5] text-white/50">
+          <p className="mt-1 text-[12px] leading-[1.5] text-white/50">
             One more pass on the summary.{' '}
             <span className="rounded bg-[#7C6FF7]/15 px-1 py-0.5 text-[#C3BBFF]">@Rahulya</span> can
             you check?
@@ -177,7 +177,7 @@ function AccessVisual() {
           <LinkIcon />
           <span className="truncate text-[11px] text-white/50">primeteam.app/invite/7c9k</span>
         </span>
-        <span className="shrink-0 rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[10px] font-medium text-white/50">
+        <span className="shrink-0 rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[11px] font-medium text-white/50">
           Copy
         </span>
       </div>
@@ -193,7 +193,7 @@ function AccessVisual() {
               <span className="text-[11px] font-medium text-white/60">{person.name}</span>
             </span>
             <span
-              className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${
+              className={`rounded border px-1.5 py-0.5 text-[11px] font-medium ${
                 owner
                   ? 'border-[#7C6FF7]/25 bg-[#7C6FF7]/10 text-[#C3BBFF]'
                   : 'border-white/[0.07] bg-white/[0.03] text-white/45'
@@ -205,7 +205,7 @@ function AccessVisual() {
         ))}
       </div>
 
-      <p className="mt-1.5 text-center text-[10.5px] text-white/25">
+      <p className="mt-1.5 text-center text-[11px] text-white/25">
         Invite link joins instantly
       </p>
     </>
@@ -218,7 +218,7 @@ function SearchVisual() {
       <div className="flex items-center gap-2 rounded-lg border border-[#7C6FF7]/25 bg-white/[0.025] px-2.5 py-1.5">
         <SearchIcon />
         <span className="flex-1 text-[11px] text-white/55">checkout</span>
-        <span className="rounded border border-white/[0.07] px-1 py-0.5 font-mono text-[10px] text-white/25">
+        <span className="rounded border border-white/[0.07] px-1 py-0.5 font-mono text-[11px] text-white/25">
           ⌘K
         </span>
       </div>
@@ -231,7 +231,7 @@ function SearchVisual() {
               <span className="text-white/85">Checkout</span> redesign
             </span>
           </span>
-          <span className="shrink-0 text-[10px] text-white/25">Product launch</span>
+          <span className="shrink-0 text-[11px] text-white/25">Product launch</span>
         </div>
         <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.025] px-2 py-1.5">
           <span className="flex min-w-0 items-center gap-1.5">
@@ -240,16 +240,16 @@ function SearchVisual() {
               Mobile <span className="text-white/85">checkout</span> QA
             </span>
           </span>
-          <span className="shrink-0 text-[10px] text-white/25">Design sprint</span>
+          <span className="shrink-0 text-[11px] text-white/25">Design sprint</span>
         </div>
       </div>
 
       <div className="mt-2 flex items-center gap-1.5 rounded-lg border border-[#7C6FF7]/15 bg-[#7C6FF7]/[0.06] px-2 py-1.5">
         <span className="h-1 w-1 shrink-0 rounded-full bg-[#7C6FF7]" />
-        <span className="min-w-0 flex-1 truncate text-[10.5px] text-white/40">
+        <span className="min-w-0 flex-1 truncate text-[11px] text-white/40">
           <span className="text-white/65">Joey</span> moved Checkout to Review
         </span>
-        <span className="shrink-0 text-[10px] text-white/25">now</span>
+        <span className="shrink-0 text-[11px] text-white/25">now</span>
       </div>
     </>
   )
