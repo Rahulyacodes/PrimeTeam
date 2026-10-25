@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { GoogleLogin } from '@react-oauth/google'
 import { sendRegistrationOtp, verifyRegistrationOtp, googleLogin } from '../api'
 import { useAuth } from '../context/AuthContext'
-import { StatusBarsLogo } from '../components/common/StatusBarsLogo'
+import AuthShell, {
+  authInputClass,
+  authLabelClass,
+  authPrimaryButtonClass,
+  authTextLinkClass,
+} from '../components/auth/AuthShell'
 
 function RegisterPage() {
   const [form, setForm]       = useState({ username: '', email: '', password: '' })
@@ -151,163 +156,147 @@ function RegisterPage() {
     }
   }
 
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-bg-primary relative overflow-hidden">
-      {/* Background glow accents matching LoginPage */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none animate-auth-glow" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none animate-auth-glow" />
+    <>
+      <AuthShell
+        mode="register"
+        title={step === 'details' ? 'Create your account' : 'Check your email'}
+        subtitle={
+          step === 'details'
+            ? 'Start your workspace in under a minute.'
+            : 'Enter the code we sent to finish setting up your workspace.'
+        }
+      >
+        <div className="flex flex-col gap-5">
+          {/* Success / Info notification */}
+          {successMsg && (
+            <div className="flex items-center gap-2 rounded-xl border border-[#7C6FF7]/20 bg-[#7C6FF7]/10 p-3 text-[12px] font-medium text-[#C3BBFF]">
+              <span className="text-sm">📩</span>
+              <span>{successMsg}</span>
+            </div>
+          )}
 
-      {/* Main Card */}
-      <div className="w-full max-w-md p-8 rounded-2xl bg-bg-surface border border-bg-border shadow-2xl shadow-black/50 backdrop-blur-xl relative z-10 flex flex-col gap-6 animate-auth-card">
-        
-        {/* Header / Logo */}
-        <div className="text-center flex flex-col items-center gap-2 animate-auth-header">
-          <StatusBarsLogo size={52} className="mb-1" />
-          <h1 className="text-2xl font-bold tracking-tight text-white">PrimeTeam</h1>
-          <p className="text-sm text-[#8B8B9E]">
-            {step === 'details' ? 'Create your workspace to get started' : 'Verify your email to complete registration'}
-          </p>
-        </div>
+          {/* Error notification */}
+          {error && (
+            <div className="flex items-center gap-2 rounded-xl border border-[#FF6B6B]/20 bg-[#FF6B6B]/10 p-3 text-[12px] font-medium text-[#FFA0A0]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" />
+                <line x1="12" y1="16" x2="12.01" />
+              </svg>
+              <span>{error}</span>
+            </div>
+          )}
 
-        {/* Success / Info notification */}
-        {successMsg && (
-          <div className="p-3.5 rounded-xl text-xs font-medium bg-purple-500/10 border border-purple-500/30 text-purple-300 flex items-center gap-2">
-            <span>📩</span>
-            <span>{successMsg}</span>
-          </div>
-        )}
-
-        {/* Error notification */}
-        {error && (
-          <div className="p-3.5 rounded-xl text-sm font-medium bg-danger/10 border border-danger/30 text-danger flex items-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12"/>
-              <line x1="12" y1="16" x2="12.01"/>
-            </svg>
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form Body with Staggered Entrance */}
-        <div className="flex flex-col gap-4 animate-auth-form">
           {/* STEP 1: Registration Form */}
           {step === 'details' ? (
             <form onSubmit={handleRequestOtp} className="flex flex-col gap-4">
-              
-              {/* Username Field */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
-                  Username
-                </label>
+                <label className={authLabelClass}>Username</label>
                 <input
                   type="text"
                   name="username"
                   value={form.username}
                   onChange={handleChange}
-                  placeholder="Elon"
+                  placeholder="Your name"
+                  autoComplete="username"
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  className={authInputClass}
                 />
               </div>
 
-              {/* Email Field */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
-                  Email Address
-                </label>
+                <label className={authLabelClass}>Email address</label>
                 <input
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  placeholder="Elon@company.com"
+                  placeholder="name@company.com"
+                  autoComplete="email"
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  className={authInputClass}
                 />
               </div>
 
-              {/* Password Field */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
-                  Password
-                </label>
+                <label className={authLabelClass}>Password</label>
                 <input
                   type="password"
                   name="password"
                   value={form.password}
                   onChange={handleChange}
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  className={authInputClass}
                 />
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-600/30 cursor-pointer mt-2"
+                className={`${authPrimaryButtonClass} mt-1`}
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                    <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    <span>Sending Code...</span>
+                    <span>Sending code...</span>
                   </>
                 ) : (
-                  'Sign up'
+                  'Create account'
                 )}
               </button>
             </form>
           ) : (
             /* STEP 2: OTP Verification Form */
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-              <div className="bg-[#121218] border border-[#282838] rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-400">Enter the 6-digit code sent to</p>
-                <p className="text-sm font-bold text-white mt-0.5 truncate">{form.email}</p>
+              <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3 text-center">
+                <p className="text-[11px] text-white/35">Enter the 6-digit code sent to</p>
+                <p className="mt-0.5 truncate text-[12.5px] font-semibold text-white/80">{form.email}</p>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-[#8B8B9E]">
-                  6-Digit Verification Code
-                </label>
+                <label className={authLabelClass}>6-digit verification code</label>
                 <input
                   type="text"
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                   placeholder="123456"
+                  autoComplete="one-time-code"
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F13] border border-bg-border text-white text-center text-lg tracking-widest font-mono focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+                  className={`${authInputClass} text-center font-mono text-lg tracking-widest`}
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || otp.length !== 6}
-                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-600/30 cursor-pointer mt-2"
+                className={`${authPrimaryButtonClass} mt-1`}
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                    <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                     <span>Verifying...</span>
                   </>
                 ) : (
-                  'Complete Registration'
+                  'Complete registration'
                 )}
               </button>
 
-              <div className="flex items-center justify-between text-xs mt-1">
+              <div className="mt-1 flex items-center justify-between text-[11px]">
                 <button
                   type="button"
                   onClick={() => setStep('details')}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-white/30 transition-colors hover:text-white/70 cursor-pointer"
                 >
                   ← Edit details
                 </button>
@@ -315,26 +304,25 @@ function RegisterPage() {
                   type="button"
                   disabled={resendCooldown > 0 || loading}
                   onClick={handleResendOtp}
-                  className="text-purple-400 hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer font-medium"
+                  className={`${authTextLinkClass} text-[11px] cursor-pointer disabled:opacity-50`}
                 >
-                  {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend Code'}
+                  {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend code'}
                 </button>
               </div>
             </form>
           )}
         </div>
 
-        {/* Footer Area with Staggered Entrance */}
-        <div className="flex flex-col gap-4 animate-auth-footer">
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-1">
-            <div className="flex-1 h-px bg-[#2A2A35]" />
-            <span className="text-xs text-[#8B8B9E] uppercase tracking-wider font-medium">or</span>
-            <div className="flex-1 h-px bg-[#2A2A35]" />
+        <div className="mt-7 flex flex-col gap-5">
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/[0.07]" />
+            <span className="text-[10px] uppercase tracking-[0.16em] text-white/25">
+              or continue with
+            </span>
+            <div className="h-px flex-1 bg-white/[0.07]" />
           </div>
 
-          {/* Official Google OAuth Component */}
-          <div className="w-full flex justify-center">
+          <div className="flex w-full justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError('Google Sign-Up failed or was closed')}
@@ -344,82 +332,73 @@ function RegisterPage() {
               text="signup_with"
             />
           </div>
-
-          {/* Footer */}
-          <p className="text-center text-sm text-[#8B8B9E] mt-1">
-            Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-purple-400 hover:underline hover:text-purple-300 transition-colors">
-              Sign in
-            </Link>
-          </p>
         </div>
-
-      </div>
+      </AuthShell>
 
       {/* Customize Username Modal for New Google Users */}
       {newGoogleUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="bg-[#1C1C24] border border-[#2A2A35] rounded-2xl w-full max-w-sm p-6 shadow-2xl text-white flex flex-col gap-4">
+          <div className="flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-white/[0.08] bg-[#14141B] p-6 text-white shadow-2xl">
             <div className="flex items-center gap-3">
               {newGoogleUser.avatar ? (
-                <img src={newGoogleUser.avatar} alt="Avatar" className="w-12 h-12 rounded-full border border-purple-500/50" />
+                <img src={newGoogleUser.avatar} alt="Avatar" className="h-12 w-12 rounded-full border border-[#7C6FF7]/40" />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-purple-600/30 border border-purple-500 flex items-center justify-center text-lg font-bold text-purple-300">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#7C6FF7]/50 bg-[#7C6FF7]/20 text-lg font-bold text-[#C3BBFF]">
                   {newGoogleUser.name?.[0] || 'U'}
                 </div>
               )}
               <div>
-                <h3 className="font-bold text-base text-white">Welcome, {newGoogleUser.name || 'Friend'}! 👋</h3>
-                <p className="text-xs text-gray-400">Choose your handle to finish setting up your workspace.</p>
+                <h3 className="text-base font-semibold text-white">Welcome, {newGoogleUser.name || 'Friend'}! 👋</h3>
+                <p className="mt-0.5 text-xs leading-relaxed text-white/40">Choose your handle to finish setting up your workspace.</p>
               </div>
             </div>
 
             {usernameError && (
-              <div className="p-2.5 rounded-lg text-xs bg-red-500/10 border border-red-500/30 text-red-400 font-medium">
+              <div className="rounded-xl border border-[#FF6B6B]/20 bg-[#FF6B6B]/10 p-2.5 text-xs font-medium text-[#FFA0A0]">
                 {usernameError}
               </div>
             )}
 
             <form onSubmit={handleConfirmCustomUsername} className="flex flex-col gap-4">
               <div>
-                <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">
-                  Username Handle
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.09em] text-white/40">
+                  Username handle
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-purple-400 font-bold text-sm">@</span>
+                  <span className="absolute left-3 top-2.5 text-sm font-bold text-[#C3BBFF]">@</span>
                   <input
                     type="text"
                     value={customUsername}
                     onChange={(e) => setCustomUsername(e.target.value)}
-                    className="w-full bg-[#0F0F14] border border-[#2A2A38] focus:border-purple-500 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white outline-none"
+                    className="w-full rounded-xl border border-white/[0.08] bg-[#0F0F14] py-2.5 pl-8 pr-3 text-sm text-white outline-none transition-colors focus:border-[#7C6FF7]/70 focus:ring-2 focus:ring-[#7C6FF7]/15"
                     placeholder="username"
                     required
                   />
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">This is how teammates will mention you on boards.</p>
+                <p className="mt-1.5 text-[11px] text-white/30">This is how teammates will mention you on boards.</p>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => navigate('/')}
-                  className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-medium text-xs transition-all"
+                  className="flex-1 rounded-xl bg-white/[0.04] py-2.5 text-xs font-medium text-white/50 transition-all hover:bg-white/[0.08] hover:text-white/80 cursor-pointer"
                 >
                   Keep @{newGoogleUser.username}
                 </button>
                 <button
                   type="submit"
                   disabled={usernameLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 font-semibold text-xs text-white transition-all shadow-lg shadow-purple-600/30"
+                  className="flex-1 rounded-xl bg-[#7C6FF7] py-2.5 text-xs font-semibold text-white shadow-[0_12px_30px_-12px_rgba(124,111,247,0.8)] transition-all hover:bg-[#8B7DFF] disabled:opacity-50 cursor-pointer"
                 >
-                  {usernameLoading ? 'Saving...' : 'Save & Continue'}
+                  {usernameLoading ? 'Saving...' : 'Save & continue'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
 
