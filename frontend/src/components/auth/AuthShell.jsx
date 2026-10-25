@@ -48,15 +48,15 @@ export default function AuthShell({ mode = 'login', title, subtitle, children })
         />
       </div>
 
-      <div className="relative z-10 flex min-h-screen w-full items-center justify-center p-3 sm:p-5 lg:p-7">
-        <div className="grid w-full max-w-[1240px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0B0B0F] shadow-[0_50px_140px_-40px_rgba(0,0,0,0.95)] lg:min-h-[740px] lg:grid-cols-[1.04fr_0.96fr]">
+      <div className="relative z-10 flex min-h-screen w-full items-center justify-center p-3 sm:p-4 lg:p-4">
+        <div className="grid w-full max-w-[1240px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0B0B0F] shadow-[0_50px_140px_-40px_rgba(0,0,0,0.95)] lg:h-[calc(100dvh-2rem)] lg:max-h-[740px] lg:grid-cols-[1.04fr_0.96fr]">
           <AuthVisual />
 
           {/* Form side */}
           <div className="relative flex flex-col bg-[#0B0B0F]">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,rgba(124,111,247,0.12),transparent_72%)] lg:hidden" />
 
-            <div className="relative flex items-center justify-between gap-4 px-5 pt-5 sm:px-8 sm:pt-6 lg:px-9 lg:pt-7 xl:px-11">
+            <div className="relative flex items-center justify-between gap-4 px-5 pt-5 sm:px-8 sm:pt-6 lg:px-9 lg:pt-6 xl:px-11">
               <Link
                 to="/"
                 className="flex items-center gap-2.5 lg:hidden"
@@ -77,7 +77,7 @@ export default function AuthShell({ mode = 'login', title, subtitle, children })
               </p>
             </div>
 
-            <div className="relative flex flex-1 flex-col justify-center px-5 pb-8 pt-8 sm:px-8 sm:pb-10 sm:pt-10 lg:px-9 lg:pb-12 xl:px-11">
+            <div className="auth-form-panel relative flex flex-1 flex-col justify-center px-5 pb-8 pt-8 sm:px-8 sm:pb-10 sm:pt-10 lg:px-9 lg:pb-8 lg:pt-8 xl:px-11">
               <div className="mx-auto w-full max-w-[400px]">
                 <div className="animate-auth-header">
                   <h1 className="font-display text-[30px] font-medium leading-[1.1] tracking-[-0.035em] text-white sm:text-[34px]">
@@ -90,11 +90,11 @@ export default function AuthShell({ mode = 'login', title, subtitle, children })
                   )}
                 </div>
 
-                <div className="mt-8 animate-auth-form">{children}</div>
+                <div className="auth-form-content mt-8 animate-auth-form">{children}</div>
               </div>
             </div>
 
-            <div className="relative flex items-center justify-between gap-3 border-t border-white/[0.05] px-5 py-4 text-[10px] text-white/25 sm:px-8 lg:px-9 xl:px-11">
+            <div className="auth-panel-footer relative flex items-center justify-between gap-3 border-t border-white/[0.05] px-5 py-3.5 text-[10px] text-white/25 sm:px-8 lg:px-9 xl:px-11">
               <span className="flex items-center gap-1.5">
                 <LockIcon className="h-3 w-3" />
                 Private by default
@@ -110,7 +110,7 @@ export default function AuthShell({ mode = 'login', title, subtitle, children })
 
 function AuthVisual() {
   return (
-    <aside className="relative hidden min-h-[740px] overflow-hidden bg-[#4B3FC6] lg:flex lg:flex-col">
+    <aside className="relative hidden overflow-hidden bg-[#4B3FC6] lg:flex lg:h-full lg:flex-col">
       <div className="absolute inset-0 bg-[linear-gradient(150deg,#6A5CF0_0%,#5046D4_42%,#2B237C_100%)]" />
       <div className="absolute -left-24 -top-28 h-[440px] w-[440px] rounded-full bg-[#C0B8FF]/35 blur-[100px]" />
       <div className="absolute -right-28 top-24 h-[430px] w-[430px] rounded-full bg-[#31228F]/70 blur-[110px]" />
@@ -125,7 +125,7 @@ function AuthVisual() {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#211B63]/70 via-transparent to-transparent" />
 
-      <div className="relative z-10 flex h-full flex-col p-8 xl:p-11">
+      <div className="relative z-10 flex h-full flex-col p-7 xl:p-9">
         <Link
           to="/"
           className="inline-flex w-fit items-center gap-2.5"
@@ -139,30 +139,30 @@ function AuthVisual() {
           </span>
         </Link>
 
-        <div className="mt-12 max-w-[430px] xl:mt-14">
+        <div className="mt-9 max-w-[430px] xl:mt-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.16] bg-white/[0.08] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-white/75">
             <span className="h-1.5 w-1.5 rounded-full bg-[#D8D2FF]" />
             One calm workspace
           </span>
-          <h2 className="mt-5 font-display text-[34px] font-medium leading-[1.06] tracking-[-0.04em] text-white xl:text-[42px]">
+          <h2 className="mt-4 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.04em] text-white xl:text-[38px]">
             Your team&apos;s work,
             <br />
             finally in one place.
           </h2>
-          <p className="mt-4 max-w-[350px] text-[13px] leading-[1.7] text-white/55 xl:text-[14px]">
+          <p className="auth-visual-paragraph mt-3 max-w-[350px] text-[13px] leading-[1.65] text-white/55 xl:text-[14px]">
             Boards, planner, and V-Chat — designed to keep the signal and lose the
             noise.
           </p>
         </div>
 
-        <div className="relative mt-9 min-h-[300px] flex-1" aria-hidden="true">
+        <div className="auth-visual-cards relative mt-6 min-h-[260px] flex-1" aria-hidden="true">
           <BoardCard />
           <ChatCard />
           <PlannerCard />
           <MentionCard />
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-4 border-t border-white/[0.14] pt-5">
+        <div className="auth-visual-footer mt-5 flex items-center justify-between gap-4 border-t border-white/[0.14] pt-4">
           <div className="flex items-center gap-2.5">
             <AvatarStack
               people={[PEOPLE.sarah, PEOPLE.joey, PEOPLE.marc, PEOPLE.echo]}
@@ -285,7 +285,7 @@ function ChatCard() {
 
 function PlannerCard() {
   return (
-    <div className="absolute bottom-0 left-[12%] z-30 w-[38%] rotate-[1deg] rounded-2xl border border-white/[0.13] bg-[#111119]/95 p-3 shadow-[0_28px_60px_-24px_rgba(8,4,36,0.85)] backdrop-blur-xl">
+    <div className="auth-visual-card-lower absolute bottom-0 left-[12%] z-30 w-[38%] rotate-[1deg] rounded-2xl border border-white/[0.13] bg-[#111119]/95 p-3 shadow-[0_28px_60px_-24px_rgba(8,4,36,0.85)] backdrop-blur-xl">
       <div className="flex items-center justify-between gap-2">
         <span className="truncate text-[10px] uppercase tracking-[0.14em] text-white/40">
           Thu · Oct 22
@@ -317,7 +317,7 @@ function PlannerCard() {
 
 function MentionCard() {
   return (
-    <div className="absolute bottom-4 right-0 z-20 w-[44%] -rotate-[1.5deg] rounded-2xl border border-white/[0.13] bg-[#13131C]/95 p-3 shadow-[0_28px_60px_-24px_rgba(8,4,36,0.85)] backdrop-blur-xl">
+    <div className="auth-visual-card-lower absolute bottom-4 right-0 z-20 w-[44%] -rotate-[1.5deg] rounded-2xl border border-white/[0.13] bg-[#13131C]/95 p-3 shadow-[0_28px_60px_-24px_rgba(8,4,36,0.85)] backdrop-blur-xl">
       <div className="flex items-center gap-2">
         <Avatar person={PEOPLE.marc} size={18} />
         <span className="text-[10px] text-white/45">Marc commented</span>

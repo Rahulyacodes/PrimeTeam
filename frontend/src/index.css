@@ -260,3 +260,34 @@ input:-webkit-autofill:active {
 .animate-auth-glow {
   animation: authGlowIn 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* Keep the auth frame fully visible on shorter laptop viewports. */
+@media (max-height: 700px) {
+  .auth-visual-footer,
+  .auth-visual-card-lower {
+    display: none;
+  }
+
+  .auth-visual-cards {
+    min-height: 230px;
+  }
+
+  .auth-form-panel {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .auth-form-content {
+    margin-top: 1.5rem;
+  }
+
+  .auth-google-block {
+    margin-top: 1.25rem;
+    gap: 1rem;
+  }
+
+  .auth-panel-footer {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+  }
+}

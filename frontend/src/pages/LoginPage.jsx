@@ -330,7 +330,7 @@ function LoginPage() {
           )}
         </div>
 
-        <div className="mt-7 flex flex-col gap-5">
+        <div className="auth-google-block mt-7 flex flex-col gap-5">
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.07]" />
             <span className="text-[10px] uppercase tracking-[0.16em] text-white/25">
