@@ -1,57 +1,131 @@
 import { Avatar } from './Avatar'
 import { PEOPLE } from './mockData'
 
+const FEATURES = [
+  {
+    title: 'Calls on the board.',
+    description: 'Start a V-Chat, share your screen, and get straight back to the work.',
+    visual: VChatVisual,
+    accent: '#69DB7C',
+  },
+  {
+    title: 'Talk where the card is.',
+    description: 'Comments, @mentions, and replies stay attached to the work.',
+    visual: CommentsVisual,
+    accent: '#7C6FF7',
+  },
+  {
+    title: 'Access, set once.',
+    description: 'Invite by link or username, then pick a role. It applies immediately.',
+    visual: AccessVisual,
+    accent: '#F5A524',
+  },
+  {
+    title: 'Find it before you ask.',
+    description: 'One field searches every board and card. Notifications stay quiet.',
+    visual: SearchVisual,
+    accent: '#4ECDC4',
+  },
+]
+
+const FEATURE_BORDERS = [
+  'border-b border-white/[0.06] sm:border-r',
+  'border-b border-white/[0.06]',
+  'border-b border-white/[0.06] sm:border-b-0 sm:border-r',
+  '',
+]
+
 export default function FeatureGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <FeatureCard
-        title="Calls on the board."
-        description="Start a V-Chat, share your screen, and get straight back to the work."
-      >
-        <VChatVisual />
-      </FeatureCard>
+    <div className="relative overflow-hidden rounded-[20px] border border-white/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.018),rgba(255,255,255,0.004))]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[620px] -translate-x-1/2 rounded-full bg-[#7C6FF7]/[0.07] blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
+      />
 
-      <FeatureCard
-        title="Talk where the card is."
-        description="Comments, @mentions, and replies stay attached to the work."
-      >
-        <CommentsVisual />
-      </FeatureCard>
-
-      <FeatureCard
-        title="Access, set once."
-        description="Invite by link or username, then pick a role. It applies immediately."
-      >
-        <AccessVisual />
-      </FeatureCard>
-
-      <FeatureCard
-        title="Find it before you ask."
-        description="One field searches every board and card. Notifications stay quiet."
-      >
-        <SearchVisual />
-      </FeatureCard>
+      <div className="relative grid sm:grid-cols-2">
+        {FEATURES.map((feature, index) => (
+          <FeatureCard
+            key={feature.title}
+            index={index}
+            title={feature.title}
+            description={feature.description}
+            visual={feature.visual}
+            accent={feature.accent}
+            flip={index % 2 === 1}
+          />
+        ))}
+      </div>
     </div>
   )
 }
 
-function FeatureCard({ title, description, children }) {
+function FeatureCard({ index, title, description, visual: Visual, accent, flip }) {
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.012] transition-colors duration-300 hover:border-white/[0.16]">
-      <div className="relative flex h-[220px] overflow-hidden border-b border-white/[0.06] bg-[#09090D] p-4">
-        <div className="landing-visual-grid absolute inset-0 opacity-45" />
-        <div className="relative flex w-full flex-col justify-center" aria-hidden="true">
-          {children}
+    <article
+      className={`group relative p-5 sm:p-6 xl:grid xl:min-h-[250px] xl:items-center xl:gap-7 xl:p-7 ${
+        FEATURE_BORDERS[index]
+      } ${
+        flip
+          ? 'xl:grid-cols-[1fr_0.9fr]'
+          : 'xl:grid-cols-[0.9fr_1fr]'
+      }`}
+    >
+      <div className={flip ? 'xl:order-2' : ''}>
+        <div className="flex items-center gap-2.5">
+          <span
+            className="h-1.5 w-1.5 rounded-full ring-4 ring-white/[0.02]"
+            style={{ backgroundColor: accent }}
+          />
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/25">
+            0{index + 1}
+          </span>
         </div>
-      </div>
 
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <h3 className="font-display text-[18px] font-medium leading-[1.3] tracking-[-0.02em] text-white">
+        <h3 className="mt-3 font-display text-[20px] font-medium leading-[1.2] tracking-[-0.025em] text-white/90">
           {title}
         </h3>
-        <p className="mt-2 text-[15px] leading-[1.7] text-white/55">{description}</p>
+        <p className="mt-2.5 max-w-[245px] text-[13px] leading-[1.65] text-white/45">
+          {description}
+        </p>
+      </div>
+
+      <div className={`mt-6 xl:mt-0 ${flip ? 'xl:order-1' : ''}`}>
+        <TiltedCard accent={accent} className="h-[186px] xl:h-[198px]">
+          <Visual />
+        </TiltedCard>
       </div>
     </article>
+  )
+}
+
+function TiltedCard({ accent, className = '', children }) {
+  return (
+    <div aria-hidden="true" className={`relative [perspective:1100px] ${className}`}>
+      <div className="relative h-full transition-transform duration-500 ease-out [transform:rotateY(5deg)_rotateX(1.5deg)] group-hover:[transform:rotateY(2.5deg)_rotateX(0.5deg)]">
+        {/* Offset slab peeking out from behind, like a stacked card. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 translate-x-[6px] translate-y-[8px] rounded-[15px] border"
+          style={{ backgroundColor: `${accent}1f`, borderColor: `${accent}33` }}
+        />
+
+        <div className="relative flex h-full flex-col overflow-hidden rounded-[15px] border border-white/[0.09] bg-[#0B0B10] p-3 shadow-[0_26px_50px_-30px_rgba(0,0,0,1)]">
+          <div className="landing-visual-grid pointer-events-none absolute inset-0 opacity-35" />
+
+          <div className="relative flex h-full flex-col justify-center opacity-90 transition-opacity duration-500 group-hover:opacity-100">
+            {children}
+          </div>
+
+          <div className="pointer-events-none absolute inset-0 rounded-[15px] ring-1 ring-inset ring-white/[0.035]" />
+          <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        </div>
+      </div>
+    </div>
   )
 }
 
