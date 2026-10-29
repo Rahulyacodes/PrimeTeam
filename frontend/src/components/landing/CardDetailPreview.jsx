@@ -16,230 +16,238 @@ const MEMBERS = [PEOPLE.rahulya, PEOPLE.joey, PEOPLE.sarah]
 
 export default function CardDetailPreview() {
   return (
-    <div aria-hidden="true" className="relative">
-      <div className="absolute inset-x-6 -bottom-2 top-4 rounded-2xl border border-white/[0.04] bg-[#0C0C11]" />
-      <div className="absolute inset-x-3 -bottom-1 top-2 rounded-2xl border border-white/[0.05] bg-[#0E0E14]" />
+    <div aria-hidden="true" className="relative mx-auto w-full max-w-[680px] xl:max-w-none">
+      {/* Ambient stage so the card sits inside the page instead of floating on it. */}
+      <div className="pointer-events-none absolute -inset-x-4 -inset-y-8 sm:-inset-x-6 sm:-inset-y-10 lg:-inset-x-12 lg:-inset-y-14">
+        <div className="landing-visual-grid absolute inset-0 opacity-[0.32]" />
+        <div className="absolute left-1/2 top-1/2 h-[78%] w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7C6FF7]/[0.14] blur-[95px]" />
+        <div className="absolute -bottom-6 left-1/2 h-24 w-[70%] -translate-x-1/2 rounded-[100%] bg-[#7C6FF7]/[0.10] blur-[55px]" />
+        <div className="absolute inset-x-10 bottom-2 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+      </div>
 
-      <div className="relative overflow-hidden rounded-2xl border border-[#2A2A38] bg-[#1C1C24] shadow-[0_35px_100px_-35px_rgba(0,0,0,0.95)]">
-        {/* Top bar */}
-        <div className="flex items-center justify-between gap-3 border-b border-[#2A2A38] bg-[#161620] px-4 py-2.5 sm:px-5">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A4D] bg-[#252533] px-2.5 py-1.5 text-[12px] font-semibold">
-              <span className="text-purple-400">Done</span>
-              <ChevronDownIcon className="h-2.5 w-2.5 text-gray-400" />
-            </span>
-          </div>
+      <div className="relative [perspective:1500px]">
+        <div className="tilt-card relative transition-transform duration-700 ease-out [transform:none] md:[transform:rotateY(8deg)_rotateX(1.5deg)] md:hover:[transform:rotateY(3deg)_rotateX(0.5deg)]">
+          {/* Offset slab peeking out from behind, in the app accent. */}
+          <div className="absolute inset-0 translate-x-[10px] translate-y-[14px] rounded-[20px] border border-[#7C6FF7]/25 bg-[#7C6FF7]/[0.13] sm:translate-x-[14px] sm:translate-y-[20px]" />
+          <div className="absolute inset-0 translate-x-[5px] translate-y-[7px] rounded-[20px] border border-white/[0.04] bg-[#0A0A0F] sm:translate-x-[7px] sm:translate-y-[10px]" />
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <span className="hidden items-center gap-1.5 rounded-xl border border-[#3A3A4D]/50 bg-[#252533]/60 px-2 py-1 text-[11px] font-medium text-gray-400 sm:flex">
-              <ClockIcon className="h-2.5 w-2.5 text-gray-500" />
-              Created 16 Aug 2026, 01:06
-            </span>
-            <TrashIcon className="h-3.5 w-3.5 text-gray-500" />
-            <XIcon className="h-3.5 w-3.5 text-gray-400" />
-          </div>
-        </div>
+          <div className="relative overflow-hidden rounded-[20px] border border-white/[0.09] bg-[#101016] shadow-[0_50px_120px_-45px_rgba(0,0,0,0.95),0_0_0_1px_rgba(124,111,247,0.05)]">
+            <div className="pointer-events-none absolute inset-x-8 top-0 z-20 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-        <div className="flex flex-col sm:flex-row">
-          {/* Main card details */}
-          <div className="min-w-0 flex-1 space-y-4 p-4 sm:p-5">
-            {/* Title */}
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500/20 text-emerald-400">
-                <CheckIcon className="h-3 w-3" />
-              </span>
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <h3 className="truncate text-[18px] font-bold tracking-[-0.01em] text-white">
-                  Checkout redesign
-                </h3>
-                <PencilIcon className="h-3 w-3 shrink-0 text-gray-500" />
-              </div>
-            </div>
-
-            {/* Action pills */}
-            <div className="flex flex-wrap items-center gap-1">
-              <ActionPill icon={<UsersIcon />} label="Members" />
-              <ActionPill icon={<TagIcon />} label="Labels" />
-              <ActionPill icon={<CalendarIcon />} label="Dates" />
-              <ActionPill icon={<ChecklistIcon />} label="Checklist" />
-              <ActionPill icon={<PaperclipIcon />} label="Attachment" />
-            </div>
-
-            {/* Members, labels, due date */}
-            <div className="flex flex-wrap items-start gap-x-3 gap-y-3 pt-0.5">
-              <div>
-                <span className="block text-[11px] font-semibold uppercase text-gray-400">Members</span>
-                <div className="mt-1 flex items-center">
-                  {MEMBERS.map((person, index) => (
-                    <span
-                      key={person.id}
-                      className={`flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border-2 border-[#161620] bg-[#121218] p-0.5 ${
-                        index > 0 ? '-ml-2' : ''
-                      }`}
-                      style={{ zIndex: MEMBERS.length - index }}
-                    >
-                      <img src={person.avatar} alt="" className="h-full w-full rounded-full object-contain" />
-                    </span>
-                  ))}
-                  <span className="-ml-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#161620] bg-[#252538] text-[11px] font-bold text-purple-300">
-                    +1
-                  </span>
-                </div>
+            {/* Top bar */}
+            <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] bg-[#14141B] px-4 py-2.5 sm:px-5">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span className="inline-flex items-center gap-1.5 rounded-lg border border-purple-400/25 bg-purple-500/[0.10] px-2.5 py-1 text-[11px] font-semibold text-purple-200">
+                  <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                  Done
+                  <ChevronDownIcon className="h-2.5 w-2.5 text-purple-300/50" />
+                </span>
+                <span className="hidden truncate font-mono text-[9px] uppercase tracking-[0.16em] text-white/25 md:inline">
+                  Product launch
+                </span>
               </div>
 
-              <div className="min-w-0">
-                <span className="block text-[11px] font-semibold uppercase text-gray-400">Labels</span>
-                <div className="mt-1 flex flex-wrap items-center gap-1">
-                  {LABELS.map((label) => (
-                    <span
-                      key={label.name}
-                      className="rounded-lg px-1.5 py-[3px] text-[11px] font-semibold text-white shadow-sm"
-                      style={{ backgroundColor: label.color }}
-                    >
-                      {label.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <span className="block text-[11px] font-semibold uppercase text-gray-400">Due Date</span>
-                <span className="mt-1 inline-flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/20 px-2 py-1 text-[11px] font-semibold text-emerald-300 shadow-sm">
-                  <CheckIcon className="h-2.5 w-2.5" />
-                  24 Aug
+              <div className="flex shrink-0 items-center gap-1">
+                <span className="hidden items-center gap-1.5 rounded-lg border border-white/[0.05] bg-white/[0.03] px-2 py-1 text-[10px] font-medium text-white/35 sm:flex">
+                  <ClockIcon className="h-2.5 w-2.5 text-white/25" />
+                  16 Aug, 01:06
+                </span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-md text-white/25">
+                  <TrashIcon className="h-3 w-3" />
+                </span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-md text-white/35">
+                  <XIcon className="h-3 w-3" />
                 </span>
               </div>
             </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-gray-300">
-                  <DescriptionIcon className="h-3.5 w-3.5" />
-                  <span className="text-[13px] font-bold">Description</span>
-                </div>
-                <span className="rounded-xl border border-[#3A3A4D] bg-[#252533] px-2 py-1 text-[11px] font-semibold text-gray-300">
-                  Edit
-                </span>
-              </div>
-              <div className="min-h-[56px] rounded-2xl border border-[#2A2A38] bg-[#121218] p-3 text-[12px] leading-[1.6] text-gray-400">
-                A two-step checkout for returning customers, with clear recovery when a payment fails.
-              </div>
-            </div>
-
-            {/* Checklist */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-gray-300">
-                  <ChecklistIcon className="h-3.5 w-3.5" />
-                  <span className="text-[13px] font-bold">Launch checklist</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-semibold text-purple-400">2/3 (67%)</span>
-                  <span className="rounded-lg bg-red-500/10 px-2 py-0.5 text-[11px] font-medium text-red-400">
-                    Delete
+            <div className="flex flex-col sm:flex-row">
+              {/* Main card details */}
+              <div className="min-w-0 flex-1 space-y-5 p-4 sm:p-5">
+                {/* Title */}
+                <div className="flex items-start gap-2.5">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/[0.12] text-emerald-300">
+                    <CheckIcon className="h-2.5 w-2.5" />
                   </span>
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <h3 className="truncate text-[18px] font-semibold tracking-[-0.01em] text-white">
+                      Checkout redesign
+                    </h3>
+                    <PencilIcon className="h-3 w-3 shrink-0 text-white/25" />
+                  </div>
                 </div>
-              </div>
 
-              <div className="h-1.5 w-full overflow-hidden rounded-full border border-[#2A2A38] bg-[#121218]">
-                <div className="h-full w-[67%] rounded-full bg-gradient-to-r from-purple-500 to-emerald-400" />
-              </div>
+                {/* Action pills */}
+                <div className="flex flex-wrap items-center gap-0.5">
+                  <ActionPill icon={<UsersIcon />} label="Members" />
+                  <ActionPill icon={<TagIcon />} label="Labels" />
+                  <ActionPill icon={<CalendarIcon />} label="Dates" />
+                  <ActionPill icon={<ChecklistIcon />} label="Checklist" />
+                  <ActionPill icon={<PaperclipIcon />} label="Attachment" />
+                </div>
 
-              <div className="space-y-1.5">
-                {CHECKLIST.map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-[#2A2A38] bg-[#121218] px-2.5 py-1.5"
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      <GripIcon className="h-2.5 w-2.5 shrink-0 text-gray-500/50" />
-                      <span
-                        className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-md border-2 ${
-                          item.done
-                            ? 'border-purple-500 bg-purple-500/20 text-purple-400'
-                            : 'border-gray-600 text-transparent'
-                        }`}
-                      >
-                        <CheckIcon className="h-2 w-2" />
-                      </span>
-                      <span className={`truncate text-[11px] ${item.done ? 'text-gray-500 line-through' : 'text-gray-200'}`}>
-                        {item.label}
+                {/* Members, due date, labels */}
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
+                    <div>
+                      <span className="block text-[9px] font-medium uppercase tracking-[0.14em] text-white/30">Members</span>
+                      <div className="mt-1.5 flex items-center">
+                        {MEMBERS.map((person, index) => (
+                          <span
+                            key={person.id}
+                            className={`flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border-2 border-[#101016] bg-[#0A0A0F] p-0.5 ${
+                              index > 0 ? '-ml-2' : ''
+                            }`}
+                            style={{ zIndex: MEMBERS.length - index }}
+                          >
+                            <img src={person.avatar} alt="" className="h-full w-full rounded-full object-contain" />
+                          </span>
+                        ))}
+                        <span className="-ml-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#101016] bg-white/[0.06] text-[10px] font-semibold text-purple-300">
+                          +1
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="block text-[9px] font-medium uppercase tracking-[0.14em] text-white/30">Due</span>
+                      <span className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-emerald-500/[0.12] px-2 py-[3px] text-[10px] font-semibold text-emerald-300">
+                        <CheckIcon className="h-2.5 w-2.5" />
+                        24 Aug
                       </span>
                     </div>
-                    <XIcon className="h-2.5 w-2.5 shrink-0 text-gray-500/60" />
                   </div>
-                ))}
-              </div>
 
-              <div className="flex items-center gap-2 pt-0.5">
-                <div className="flex-1 rounded-xl border border-[#2A2A38] bg-[#121218] px-2.5 py-1.5 text-[11px] text-gray-500">
-                  Add an item...
+                  <div className="min-w-0">
+                    <span className="block text-[9px] font-medium uppercase tracking-[0.14em] text-white/30">Labels</span>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                      {LABELS.map((label) => (
+                        <span
+                          key={label.name}
+                          className="rounded-md px-1.5 py-[3px] text-[10px] font-semibold"
+                          style={{ backgroundColor: `${label.color}22`, color: label.color }}
+                        >
+                          {label.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <span className="rounded-xl border-2 border-purple-500 px-2.5 py-1 text-[11px] font-bold text-purple-300">
-                  Add
-                </span>
-              </div>
-            </div>
 
+                {/* Description */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-white/35">
+                      <DescriptionIcon className="h-3 w-3" />
+                      <span className="text-[11px] font-semibold text-white/65">Description</span>
+                    </div>
+                    <span className="text-[10px] font-medium text-white/30">Edit</span>
+                  </div>
+                  <div className="rounded-xl border border-white/[0.06] bg-[#0B0B11] px-3 py-2.5 text-[11.5px] leading-[1.65] text-white/55">
+                    A two-step checkout for returning customers, with clear recovery when a payment fails.
+                  </div>
+                </div>
+
+                {/* Checklist */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-white/35">
+                      <ChecklistIcon className="h-3 w-3" />
+                      <span className="text-[11px] font-semibold text-white/65">Launch checklist</span>
+                    </div>
+                    <span className="font-mono text-[10px] font-medium text-purple-300/80">2/3 · 67%</span>
+                  </div>
+
+                  <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                    <div className="h-full w-[67%] rounded-full bg-gradient-to-r from-purple-500 to-emerald-400/90" />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    {CHECKLIST.map((item) => (
+                      <div
+                        key={item.label}
+                        className="flex items-center gap-2 rounded-lg border border-white/[0.05] bg-[#0B0B11] px-2.5 py-1.5"
+                      >
+                        <GripIcon className="h-2.5 w-2.5 shrink-0 text-white/20" />
+                        <span
+                          className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[4px] border ${
+                            item.done
+                              ? 'border-purple-400/70 bg-purple-500/20 text-purple-300'
+                              : 'border-white/20 text-transparent'
+                          }`}
+                        >
+                          <CheckIcon className="h-2 w-2" />
+                        </span>
+                        <span className={`truncate text-[11px] ${item.done ? 'text-white/30 line-through' : 'text-white/70'}`}>
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 pt-0.5">
+                    <div className="flex-1 rounded-lg border border-white/[0.06] bg-[#0B0B11] px-2.5 py-1.5 text-[10.5px] text-white/25">
+                      Add an item...
+                    </div>
+                    <span className="rounded-lg border border-purple-400/40 bg-purple-500/[0.10] px-2.5 py-1 text-[10px] font-semibold text-purple-200">
+                      Add
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comments and activity */}
+              <aside className="hidden w-[252px] shrink-0 flex-col border-l border-white/[0.06] bg-[#0C0C12] md:flex">
+                <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+                  <div className="flex items-center gap-1.5 text-white/35">
+                    <CommentIcon className="h-3 w-3" />
+                    <span className="text-[11px] font-semibold text-white/65">Comments &amp; activity</span>
+                  </div>
+                  <span className="rounded-md bg-white/[0.05] px-1.5 py-0.5 text-[9px] font-medium text-white/35">5</span>
+                </div>
+
+                <div className="flex-1 space-y-4 p-4">
+                  <div className="rounded-xl border border-white/[0.06] bg-[#0B0B11] px-3 py-2.5">
+                    <p className="text-[10.5px] text-white/25">Write a comment...</p>
+                    <div className="mt-2.5 flex items-center justify-between">
+                      <span className="text-[9px] text-white/20">@ to mention</span>
+                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-purple-500/[0.15] text-purple-300">
+                        <ArrowUpIcon />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="divide-y divide-white/[0.04]">
+                    <ActivityRow avatar={PEOPLE.sarah.avatar} name="Sarah" time="2h ago">
+                      Two-step flow is ready. QA on Safari is the last step.
+                    </ActivityRow>
+                    <ActivityRow avatar={PEOPLE.rahulya.avatar} name="Rahulya" time="Yesterday">
+                      attached <span className="text-white/65">checkout-spec.pdf</span>
+                    </ActivityRow>
+                    <ActivityRow avatar={PEOPLE.sarah.avatar} name="Sarah" time="17 Aug">
+                      set the due date to <span className="text-emerald-300">24 Aug</span>
+                    </ActivityRow>
+                    <ActivityRow avatar={PEOPLE.joey.avatar} name="Joey" time="18 Aug · 11:20">
+                      moved this card to <span className="text-purple-300">Done</span>
+                    </ActivityRow>
+                    <ActivityRow avatar={PEOPLE.rahulya.avatar} name="Rahulya" time="16 Aug · 01:06">
+                      created this card
+                    </ActivityRow>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-white/[0.06] px-4 py-2.5">
+                  <span className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300/80">
+                    <span className="h-1 w-1 rounded-full bg-emerald-400" />
+                    Saved
+                  </span>
+                  <span className="rounded-lg border border-purple-400/30 bg-purple-500/[0.08] px-2.5 py-1 text-[10px] font-semibold text-purple-200">
+                    Done
+                  </span>
+                </div>
+              </aside>
+            </div>
           </div>
-
-          {/* Comments and activity */}
-          <aside className="hidden w-[260px] shrink-0 flex-col justify-between border-l border-[#2A2A38] bg-[#161620] p-4 sm:flex">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2 border-b border-[#2A2A38] pb-3">
-                <div className="flex min-w-0 items-center gap-1.5 text-gray-300">
-                  <CommentIcon className="h-3.5 w-3.5 shrink-0" />
-                  <span className="whitespace-nowrap text-[12px] font-bold text-gray-200">Comments and activity</span>
-                </div>
-                <span className="shrink-0 rounded-xl border border-[#3A3A4D] bg-[#252533] px-1.5 py-1 text-[11px] font-semibold text-gray-300">
-                  Hide details
-                </span>
-              </div>
-
-              <div className="min-h-[56px] rounded-xl border border-[#2A2A38] bg-[#121218] p-3 text-[11px] text-gray-500">
-                Write a comment...
-              </div>
-
-              <div className="flex items-start gap-2 rounded-xl border border-[#2A2A38]/50 bg-[#121218]/60 p-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-purple-500/40 bg-[#121218] p-0.5">
-                  <img src={PEOPLE.joey.avatar} alt="" className="h-full w-full rounded-full object-contain" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[11px] leading-tight text-gray-400">
-                    <span className="font-semibold text-gray-200">Joey</span> added this card to{' '}
-                    <span className="font-medium text-purple-300">Done</span>
-                  </p>
-                  <span className="text-[11px] text-gray-500">18 Aug, 11:20</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-purple-500/40 bg-[#121218] p-0.5">
-                  <img src={PEOPLE.sarah.avatar} alt="" className="h-full w-full rounded-full object-contain" />
-                </span>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-semibold text-gray-200">Sarah</span>
-                    <span className="text-[11px] text-gray-500">2h</span>
-                  </div>
-                  <p className="mt-1 text-[11px] leading-[1.5] text-gray-400">
-                    Two-step flow is ready. QA on Safari is the last step.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between border-t border-[#2A2A38] pt-3">
-              <span className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Saved
-              </span>
-              <span className="rounded-xl border-2 border-purple-500 px-3 py-1 text-[11px] font-bold text-purple-300">
-                Done
-              </span>
-            </div>
-          </aside>
         </div>
       </div>
     </div>
@@ -248,10 +256,34 @@ export default function CardDetailPreview() {
 
 function ActionPill({ icon, label }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-xl border border-[#2A2A38] bg-[#121218] px-2 py-1.5 text-[11px] font-semibold text-gray-300">
+    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg border border-white/[0.06] bg-white/[0.025] px-[4.5px] py-1 text-[10px] font-medium text-white/50">
       {icon}
       {label}
     </span>
+  )
+}
+
+function ActivityRow({ avatar, name, time, children }) {
+  return (
+    <div className="flex items-start gap-2.5 py-3 first:pt-0 last:pb-0">
+      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/[0.08] bg-[#0A0A0F] p-0.5">
+        <img src={avatar} alt="" className="h-full w-full rounded-full object-contain" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10.5px] leading-[1.5] text-white/50">
+          <span className="font-medium text-white/75">{name}</span> {children}
+        </p>
+        <span className="mt-1 block text-[9px] text-white/30">{time}</span>
+      </div>
+    </div>
+  )
+}
+
+function ArrowUpIcon() {
+  return (
+    <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
   )
 }
 

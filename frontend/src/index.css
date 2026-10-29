@@ -108,6 +108,10 @@
   .landing-live-dot {
     animation: none !important;
   }
+
+  .tilt-card {
+    transform: none !important;
+  }
 }
 
 /* Dark mode autofill override for Chrome/Safari/Firefox */
