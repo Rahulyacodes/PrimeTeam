@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
   --color-bg-primary: #0F0F13;
   --color-bg-surface: #1C1C24;
   --color-bg-surface-hover: #252530;
@@ -15,12 +19,126 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     min-height: 100vh;
     margin: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  section[id] {
+    scroll-margin-top: 88px;
+  }
+}
+
+::selection {
+  background: rgba(124, 111, 247, 0.28);
+  color: #fff;
+}
+
+/* Landing page motion */
+@keyframes landingCardLand {
+  0% {
+    opacity: 0.35;
+    transform: translateY(-7px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes landingFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landingLivePulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(105, 219, 124, 0.45);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 0 4px rgba(105, 219, 124, 0);
+  }
+}
+
+@keyframes landingBadgePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(124, 111, 247, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(124, 111, 247, 0);
+  }
+}
+
+@keyframes landingScrollCue {
+  0%, 100% {
+    transform: translateY(-7px);
+  }
+  50% {
+    transform: translateY(7px);
+  }
+}
+
+.landing-card-land {
+  animation: landingCardLand 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.landing-fade-up {
+  animation: landingFadeUp 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.landing-live-dot {
+  animation: landingLivePulse 2.4s ease-in-out infinite;
+}
+
+.landing-badge-dot {
+  animation: landingBadgePulse 2.6s ease-in-out infinite;
+}
+
+.landing-scroll-cue {
+  animation: landingScrollCue 1.9s ease-in-out infinite;
+}
+
+.landing-visual-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 10%, transparent 82%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 10%, transparent 82%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .landing-card-land,
+  .landing-fade-up,
+  .landing-live-dot,
+  .landing-badge-dot,
+  .landing-scroll-cue {
+    animation: none !important;
+  }
+
+  .tilt-card {
+    transform: none !important;
   }
 }
 
@@ -173,4 +291,35 @@ input:-webkit-autofill:active {
 
 .animate-auth-glow {
   animation: authGlowIn 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Keep the auth frame fully visible on shorter laptop viewports. */
+@media (max-height: 700px) {
+  .auth-visual-footer,
+  .auth-visual-card-lower {
+    display: none;
+  }
+
+  .auth-visual-cards {
+    min-height: 230px;
+  }
+
+  .auth-form-panel {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .auth-form-content {
+    margin-top: 1.5rem;
+  }
+
+  .auth-google-block {
+    margin-top: 1.25rem;
+    gap: 1rem;
+  }
+
+  .auth-panel-footer {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+  }
 }
