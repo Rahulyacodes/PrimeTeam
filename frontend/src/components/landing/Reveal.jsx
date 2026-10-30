@@ -36,8 +36,8 @@ export default function Reveal({ children, className = '', delay = 0 }) {
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        visible ? 'translate-y-0 opacity-100' : 'translate-y-3.5 opacity-0'
+      className={`transform-gpu transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        visible ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-4 opacity-0 blur-[3px]'
       } ${className}`}
     >
       {children}

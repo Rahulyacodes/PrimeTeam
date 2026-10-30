@@ -6,9 +6,14 @@ import HeroBoard from '../components/landing/HeroBoard'
 import PlannerPreview from '../components/landing/PlannerPreview'
 import CardDetailPreview from '../components/landing/CardDetailPreview'
 import FeatureGrid from '../components/landing/FeatureGrid'
+import WorkspaceMap from '../components/landing/WorkspaceMap'
 import Reveal from '../components/landing/Reveal'
 
-const CAPABILITIES = ['Boards', 'Planner', 'Comments', 'V-Chat', 'Roles', 'Search']
+const OVERVIEW_STATS = [
+  { value: '06', label: 'Surfaces' },
+  { value: '01', label: 'Workspace' },
+  { value: '00', label: 'Add-ons' },
+]
 
 const PRINCIPLES = [
   {
@@ -55,7 +60,7 @@ function LandingPage() {
         <section className="mx-auto max-w-[1180px] px-6 pb-16 pt-16 sm:pt-20 lg:pb-20 lg:pt-24">
           <div className="max-w-[930px]">
             <div className="landing-fade-up inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#7C6FF7]" />
+              <span className="landing-badge-dot h-1.5 w-1.5 rounded-full bg-[#7C6FF7]" />
               Project workspace for teams
             </div>
 
@@ -82,14 +87,14 @@ function LandingPage() {
             >
               <Link
                 to={user ? '/' : '/register'}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[14px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[14px] font-medium text-[#0B0B10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
               >
                 {user ? 'Open dashboard' : 'Start for free'}
                 <ArrowIcon />
               </Link>
               <a
                 href="#product"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7]"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05] hover:text-white active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7]"
               >
                 See how it works
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -120,86 +125,105 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Capability strip */}
-        <div className="border-y border-white/[0.06] bg-white/[0.008]">
-          <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
-            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
-              Inside PrimeTeam
-            </span>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              {CAPABILITIES.map((capability) => (
-                <span key={capability} className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/45">
-                  {capability}
-                </span>
-              ))}
+        {/* Workspace overview */}
+        <div id="product" className="scroll-mt-[88px] border-y border-white/[0.06] bg-white/[0.008]">
+          <section className="mx-auto max-w-[1180px] px-6 py-16 sm:py-20">
+            <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-16">
+              <div className="min-w-0">
+                <Reveal>
+                  <SectionLabel number="01" label="Inside the workspace" />
+                  <h2 className="mt-5 max-w-[460px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
+                    One workspace.
+                    <span className="block bg-gradient-to-r from-white/40 to-white/15 bg-clip-text text-transparent">
+                      Six surfaces.
+                    </span>
+                  </h2>
+                </Reveal>
+                <Reveal delay={90}>
+                  <p className="mt-5 max-w-[430px] text-[15px] leading-[1.75] text-white/55">
+                    The board shows what is moving. The planner shows when it lands. The card holds the
+                    detail. It is the same work in every view — not a copy pasted into another tab.
+                  </p>
+                </Reveal>
+
+                <Reveal delay={160}>
+                  <div className="mt-8 flex items-center gap-7 border-t border-white/[0.07] pt-5 sm:gap-10">
+                    {OVERVIEW_STATS.map((stat) => (
+                      <div key={stat.label}>
+                        <span className="block font-display text-[24px] font-medium leading-none tracking-[-0.03em] text-white/85">
+                          {stat.value}
+                        </span>
+                        <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.16em] text-white/30">
+                          {stat.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </Reveal>
+              </div>
+
+              <Reveal delay={120} className="min-w-0">
+                <WorkspaceMap />
+              </Reveal>
             </div>
-            <span className="ml-auto hidden font-mono text-[11px] uppercase tracking-[0.14em] text-white/30 sm:inline">
-              One workspace. No add-ons.
-            </span>
-          </div>
+          </section>
         </div>
 
-        {/* Product intro */}
-        <div id="product" className="scroll-mt-[88px]">
-          <section className="mx-auto max-w-[1180px] px-6 pb-6 pt-20 sm:pt-24">
-            <Reveal>
-              <SectionLabel number="01" label="Inside the workspace" />
-              <div className="mt-5 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
-                <h2 className="max-w-[620px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
-                  The work, without the busywork.
-                </h2>
-                <p className="max-w-[440px] text-[15px] leading-[1.75] text-white/55 lg:justify-self-end">
-                  Two views carry the week. The board shows what is moving. The planner shows when.
-                  Everything else lives one click away, not one tab away.
-                </p>
-              </div>
-            </Reveal>
-          </section>
-
-          {/* Planner */}
-          <section id="planner" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
-            <div className="grid items-center gap-12 xl:grid-cols-[0.78fr_1.22fr] xl:gap-16">
-              <Reveal className="min-w-0">
+        {/* Planner */}
+        <section id="planner" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
+          <div className="grid items-center gap-12 xl:grid-cols-[0.78fr_1.22fr] xl:gap-16">
+            <div className="min-w-0">
+              <Reveal>
                 <SectionLabel number="02" label="The week" />
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   See the week before it sees you.
                 </h2>
+              </Reveal>
+              <Reveal delay={90}>
                 <p className="mt-5 max-w-[420px] text-[15px] leading-[1.75] text-white/55">
                   Every card with a date lands on the planner automatically. Overdue work surfaces first,
                   today stays obvious, and the rest of the week is right there.
                 </p>
+              </Reveal>
+              <Reveal delay={160}>
                 <ul className="mt-7 space-y-3">
                   <FeaturePoint>Overdue, today, and later — grouped without filters.</FeaturePoint>
                   <FeaturePoint>Complete a task without leaving the calendar.</FeaturePoint>
                   <FeaturePoint>One week across every board you are part of.</FeaturePoint>
                 </ul>
               </Reveal>
-
-              <Reveal delay={100} className="min-w-0">
-                <PlannerPreview />
-              </Reveal>
             </div>
-          </section>
 
-          {/* Section divider */}
-          <div aria-hidden="true" className="border-t border-white/[0.06]" />
+            <Reveal delay={100} className="min-w-0">
+              <PlannerPreview />
+            </Reveal>
+          </div>
+        </section>
 
-          {/* Card detail */}
-          <section id="details" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
-            <div className="grid items-center gap-12 xl:grid-cols-[1.2fr_0.8fr] xl:gap-16">
-              <Reveal delay={100} className="order-2 mx-auto min-w-0 w-full max-w-[720px] xl:order-1 xl:max-w-none">
-                <CardDetailPreview />
-              </Reveal>
+        {/* Section divider */}
+        <div aria-hidden="true" className="h-px bg-gradient-to-r from-transparent via-white/[0.09] to-transparent" />
 
-              <Reveal className="order-1 min-w-0 xl:order-2">
+        {/* Card detail */}
+        <section id="details" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
+          <div className="grid items-center gap-12 xl:grid-cols-[1.2fr_0.8fr] xl:gap-16">
+            <Reveal delay={100} className="order-2 mx-auto min-w-0 w-full max-w-[720px] xl:order-1 xl:max-w-none">
+              <CardDetailPreview />
+            </Reveal>
+
+            <div className="order-1 min-w-0 xl:order-2">
+              <Reveal>
                 <SectionLabel number="03" label="The card" />
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   The whole story, on one card.
                 </h2>
+              </Reveal>
+              <Reveal delay={90}>
                 <p className="mt-5 max-w-[420px] text-[15px] leading-[1.75] text-white/55">
                   Assign an owner, set a date, attach the brief. Break the work into a checklist, leave a
                   comment, and move it forward — without opening another app.
                 </p>
+              </Reveal>
+              <Reveal delay={160}>
                 <ul className="mt-7 space-y-3">
                   <FeaturePoint>Assignees, labels, due dates, and attachments.</FeaturePoint>
                   <FeaturePoint>Checklists and comments that travel with the card.</FeaturePoint>
@@ -207,29 +231,29 @@ function LandingPage() {
                 </ul>
               </Reveal>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Supporting features */}
-          <section className="border-t border-white/[0.06]">
-            <div className="mx-auto max-w-[1180px] px-6 py-20 sm:py-24">
-              <Reveal>
-                <SectionLabel number="04" label="The rest of the kit" />
-                <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
-                  <h2 className="max-w-[520px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
-                    Small features. Fewer tabs.
-                  </h2>
-                  <p className="max-w-[430px] text-[15px] leading-[1.75] text-white/55 lg:justify-self-end">
-                    The extras you would normally bolt on already live where the work is.
-                  </p>
-                </div>
-              </Reveal>
+        {/* Supporting features */}
+        <section className="border-t border-white/[0.06]">
+          <div className="mx-auto max-w-[1180px] px-6 py-20 sm:py-24">
+            <Reveal>
+              <SectionLabel number="04" label="The rest of the kit" />
+              <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
+                <h2 className="max-w-[520px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
+                  Small features. Fewer tabs.
+                </h2>
+                <p className="max-w-[430px] text-[15px] leading-[1.75] text-white/55 lg:justify-self-end">
+                  The extras you would normally bolt on already live where the work is.
+                </p>
+              </div>
+            </Reveal>
 
-              <Reveal delay={100} className="mt-10">
-                <FeatureGrid />
-              </Reveal>
+            <div className="mt-10">
+              <FeatureGrid />
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
 
         {/* Principles */}
         <section id="principles" className="scroll-mt-[88px] border-t border-white/[0.06]">
@@ -239,14 +263,16 @@ function LandingPage() {
                 <SectionLabel number="05" label="Principles" />
                 <h2 className="mt-5 max-w-[520px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
                   Software should feel like a tool.
-                  <span className="block text-white/30">Not another place to check.</span>
+                  <span className="block bg-gradient-to-r from-white/40 to-white/15 bg-clip-text text-transparent">
+                    Not another place to check.
+                  </span>
                 </h2>
               </Reveal>
 
-              <Reveal delay={100}>
-                <div className="border-t border-white/[0.07]">
-                  {PRINCIPLES.map((principle) => (
-                    <div key={principle.number} className="grid grid-cols-[40px_1fr] gap-4 border-b border-white/[0.07] py-6 sm:grid-cols-[56px_1fr]">
+              <div className="border-t border-white/[0.07]">
+                {PRINCIPLES.map((principle, index) => (
+                  <Reveal key={principle.number} delay={index * 90}>
+                    <div className="grid grid-cols-[40px_1fr] gap-4 border-b border-white/[0.07] py-6 sm:grid-cols-[56px_1fr]">
                       <span className="font-mono text-[11px] text-white/35">{principle.number}</span>
                       <div>
                         <h3 className="font-display text-[18px] font-medium tracking-[-0.02em] text-white/90">
@@ -257,9 +283,9 @@ function LandingPage() {
                         </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </Reveal>
+                  </Reveal>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -277,6 +303,7 @@ function LandingPage() {
               WebkitMaskImage: 'radial-gradient(ellipse 70% 90% at 30% 50%, black 10%, transparent 75%)',
             }}
           />
+          <div className="pointer-events-none absolute left-1/2 top-1/3 h-[420px] w-[860px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7C6FF7]/[0.10] blur-[130px]" />
           <div className="pointer-events-none absolute -right-24 top-1/2 hidden -translate-y-1/2 opacity-[0.045] lg:block">
             <StatusBarsLogo size={460} />
           </div>
@@ -285,7 +312,10 @@ function LandingPage() {
             <Reveal>
               <SectionLabel number="06" label="Start here" />
               <h2 className="mt-5 max-w-[720px] font-display text-[40px] font-medium leading-[1.02] tracking-[-0.045em] text-white sm:text-[60px]">
-                Give your team a quieter week.
+                Give your team a{' '}
+                <span className="bg-gradient-to-r from-[#D7D1FF] via-[#B7ADF6] to-[#7C6FF7] bg-clip-text text-transparent">
+                  quieter week.
+                </span>
               </h2>
               <p className="mt-5 max-w-[520px] text-[15px] leading-[1.75] text-white/55">
                 Create a board, invite the people who need it, and move the first card. That is the
@@ -294,7 +324,7 @@ function LandingPage() {
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <Link
                   to={user ? '/' : '/register'}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[14px] font-medium text-[#0B0B10] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#EDEBFA] px-5 py-3 text-[14px] font-medium text-[#0B0B10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080B]"
                 >
                   {user ? 'Open your dashboard' : 'Create your first board'}
                   <ArrowIcon />
@@ -302,7 +332,7 @@ function LandingPage() {
                 {!user && (
                   <Link
                     to="/login"
-                    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05] hover:text-white active:translate-y-0"
                   >
                     Sign in
                   </Link>
@@ -425,7 +455,8 @@ function FooterColumn({ title, children }) {
 }
 
 function FooterLink({ href, to, external = false, children }) {
-  const className = 'text-[13px] text-white/55 transition-colors hover:text-white'
+  const className =
+    'inline-block text-[13px] text-white/55 transition-all duration-200 hover:translate-x-0.5 hover:text-white'
 
   if (to) {
     return (

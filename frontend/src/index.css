@@ -77,6 +77,15 @@
   }
 }
 
+@keyframes landingBadgePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(124, 111, 247, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(124, 111, 247, 0);
+  }
+}
+
 .landing-card-land {
   animation: landingCardLand 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -87,6 +96,10 @@
 
 .landing-live-dot {
   animation: landingLivePulse 2.4s ease-in-out infinite;
+}
+
+.landing-badge-dot {
+  animation: landingBadgePulse 2.6s ease-in-out infinite;
 }
 
 .landing-visual-grid {
@@ -105,7 +118,8 @@
 
   .landing-card-land,
   .landing-fade-up,
-  .landing-live-dot {
+  .landing-live-dot,
+  .landing-badge-dot {
     animation: none !important;
   }
 

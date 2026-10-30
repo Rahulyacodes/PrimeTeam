@@ -1,5 +1,6 @@
 import { Avatar } from './Avatar'
 import { PEOPLE } from './mockData'
+import Reveal from './Reveal'
 
 const FEATURES = [
   {
@@ -44,20 +45,25 @@ export default function FeatureGrid() {
       />
       <div
         aria-hidden="true"
+        className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-[#4ECDC4]/[0.05] blur-3xl"
+      />
+      <div
+        aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
       />
 
       <div className="relative grid sm:grid-cols-2">
         {FEATURES.map((feature, index) => (
-          <FeatureCard
-            key={feature.title}
-            index={index}
-            title={feature.title}
-            description={feature.description}
-            visual={feature.visual}
-            accent={feature.accent}
-            flip={index % 2 === 1}
-          />
+          <Reveal key={feature.title} delay={index * 90} className={FEATURE_BORDERS[index]}>
+            <FeatureCard
+              index={index}
+              title={feature.title}
+              description={feature.description}
+              visual={feature.visual}
+              accent={feature.accent}
+              flip={index % 2 === 1}
+            />
+          </Reveal>
         ))}
       </div>
     </div>
@@ -67,9 +73,7 @@ export default function FeatureGrid() {
 function FeatureCard({ index, title, description, visual: Visual, accent, flip }) {
   return (
     <article
-      className={`group relative p-5 sm:p-6 xl:grid xl:min-h-[250px] xl:items-center xl:gap-7 xl:p-7 ${
-        FEATURE_BORDERS[index]
-      } ${
+      className={`group relative p-5 transition-colors duration-300 hover:bg-white/[0.015] sm:p-6 xl:grid xl:min-h-[250px] xl:items-center xl:gap-7 xl:p-7 ${
         flip
           ? 'xl:grid-cols-[1fr_0.9fr]'
           : 'xl:grid-cols-[0.9fr_1fr]'
@@ -86,10 +90,10 @@ function FeatureCard({ index, title, description, visual: Visual, accent, flip }
           </span>
         </div>
 
-        <h3 className="mt-3 font-display text-[20px] font-medium leading-[1.2] tracking-[-0.025em] text-white/90">
+        <h3 className="mt-3 font-display text-[20px] font-medium leading-[1.2] tracking-[-0.025em] text-white/90 transition-colors duration-300 group-hover:text-white">
           {title}
         </h3>
-        <p className="mt-2.5 max-w-[245px] text-[13px] leading-[1.65] text-white/45">
+        <p className="mt-2.5 max-w-[245px] text-[13px] leading-[1.65] text-white/45 transition-colors duration-300 group-hover:text-white/60">
           {description}
         </p>
       </div>

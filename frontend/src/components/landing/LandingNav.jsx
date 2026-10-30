@@ -13,6 +13,16 @@ const NAV_LINKS = [
 export default function LandingNav() {
   const { user } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 10)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     function closeOnResize() {
@@ -32,7 +42,13 @@ export default function LandingNav() {
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#08080B]/80 backdrop-blur-xl">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-300 ${
+        scrolled
+          ? 'border-white/[0.09] bg-[#08080B]/92 shadow-[0_18px_40px_-32px_rgba(0,0,0,1)]'
+          : 'border-white/[0.06] bg-[#08080B]/72'
+      }`}
+    >
       <nav className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-6">
         <Link
           to="/"
