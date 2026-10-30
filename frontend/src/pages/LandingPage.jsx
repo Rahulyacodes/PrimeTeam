@@ -36,6 +36,15 @@ const PRINCIPLES = [
 function LandingPage() {
   const { user } = useAuth()
 
+  const scrollToBoardPreview = (event) => {
+    event.preventDefault()
+    const target = document.getElementById('live-board-preview')
+    if (!target) return
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const top = target.getBoundingClientRect().top + window.scrollY - 88
+    window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' })
+  }
+
   return (
     <div id="top" className="relative isolate min-h-screen overflow-x-clip bg-[#08080B] font-sans text-white selection:bg-[#7C6FF7]/30 selection:text-white">
       {/* Background texture */}
@@ -93,7 +102,8 @@ function LandingPage() {
                 <ArrowIcon />
               </Link>
               <a
-                href="#product"
+                href="#live-board-preview"
+                onClick={scrollToBoardPreview}
                 className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.025] px-5 py-3 text-[14px] font-medium text-white/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05] hover:text-white active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7]"
               >
                 See how it works
@@ -112,16 +122,41 @@ function LandingPage() {
             </p>
           </div>
 
+          {/* Scroll cue */}
+          <div className="mt-12 flex justify-center sm:mt-14">
+            <a
+              href="#live-board-preview"
+              onClick={scrollToBoardPreview}
+              aria-label="Scroll down to the live board preview"
+              className="group flex h-12 w-12 items-center justify-center rounded-full text-white/45 transition-colors duration-300 hover:text-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FF7] focus-visible:ring-offset-4 focus-visible:ring-offset-[#08080B]"
+            >
+              <svg
+                className="landing-scroll-cue h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 5v14M6 13l6 6 6-6" />
+              </svg>
+            </a>
+          </div>
+
           {/* Board preview */}
-          <div className="landing-fade-up mt-14 sm:mt-16" style={{ animationDelay: '300ms' }}>
-            <div className="mb-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">
-              <span className="flex items-center gap-2">
-                <span className="landing-live-dot h-1 w-1 rounded-full bg-emerald-400" />
-                Live board preview
-              </span>
-              <span className="hidden sm:inline">Product launch / Q4</span>
-            </div>
-            <HeroBoard />
+          <div id="live-board-preview" className="mt-8 scroll-mt-[88px] sm:mt-10">
+            <Reveal from="left" threshold={0} rootMargin="0px 0px -25% 0px">
+              <div className="mb-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">
+                <span className="flex items-center gap-2">
+                  <span className="landing-live-dot h-1 w-1 rounded-full bg-emerald-400" />
+                  Live board preview
+                </span>
+                <span className="hidden sm:inline">Product launch / Q4</span>
+              </div>
+              <HeroBoard />
+            </Reveal>
           </div>
         </section>
 
@@ -130,7 +165,7 @@ function LandingPage() {
           <section className="mx-auto max-w-[1180px] px-6 py-16 sm:py-20">
             <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-16">
               <div className="min-w-0">
-                <Reveal>
+                <Reveal from="left">
                   <SectionLabel number="01" label="Inside the workspace" />
                   <h2 className="mt-5 max-w-[460px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
                     One workspace.
@@ -139,14 +174,14 @@ function LandingPage() {
                     </span>
                   </h2>
                 </Reveal>
-                <Reveal delay={90}>
+                <Reveal from="left" delay={90}>
                   <p className="mt-5 max-w-[430px] text-[15px] leading-[1.75] text-white/55">
                     The board shows what is moving. The planner shows when it lands. The card holds the
                     detail. It is the same work in every view — not a copy pasted into another tab.
                   </p>
                 </Reveal>
 
-                <Reveal delay={160}>
+                <Reveal from="left" delay={160}>
                   <div className="mt-8 flex items-center gap-7 border-t border-white/[0.07] pt-5 sm:gap-10">
                     {OVERVIEW_STATS.map((stat) => (
                       <div key={stat.label}>
@@ -162,7 +197,7 @@ function LandingPage() {
                 </Reveal>
               </div>
 
-              <Reveal delay={120} className="min-w-0">
+              <Reveal from="right" delay={120} className="min-w-0">
                 <WorkspaceMap />
               </Reveal>
             </div>
@@ -173,19 +208,19 @@ function LandingPage() {
         <section id="planner" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
           <div className="grid items-center gap-12 xl:grid-cols-[0.78fr_1.22fr] xl:gap-16">
             <div className="min-w-0">
-              <Reveal>
+              <Reveal from="left">
                 <SectionLabel number="02" label="The week" />
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   See the week before it sees you.
                 </h2>
               </Reveal>
-              <Reveal delay={90}>
+              <Reveal from="left" delay={90}>
                 <p className="mt-5 max-w-[420px] text-[15px] leading-[1.75] text-white/55">
                   Every card with a date lands on the planner automatically. Overdue work surfaces first,
                   today stays obvious, and the rest of the week is right there.
                 </p>
               </Reveal>
-              <Reveal delay={160}>
+              <Reveal from="left" delay={160}>
                 <ul className="mt-7 space-y-3">
                   <FeaturePoint>Overdue, today, and later — grouped without filters.</FeaturePoint>
                   <FeaturePoint>Complete a task without leaving the calendar.</FeaturePoint>
@@ -194,7 +229,7 @@ function LandingPage() {
               </Reveal>
             </div>
 
-            <Reveal delay={100} className="min-w-0">
+            <Reveal from="right" delay={100} className="min-w-0">
               <PlannerPreview />
             </Reveal>
           </div>
@@ -206,24 +241,24 @@ function LandingPage() {
         {/* Card detail */}
         <section id="details" className="mx-auto max-w-[1180px] scroll-mt-[88px] px-6 py-16 sm:py-20">
           <div className="grid items-center gap-12 xl:grid-cols-[1.2fr_0.8fr] xl:gap-16">
-            <Reveal delay={100} className="order-2 mx-auto min-w-0 w-full max-w-[720px] xl:order-1 xl:max-w-none">
+            <Reveal from="left" delay={100} className="order-2 mx-auto min-w-0 w-full max-w-[720px] xl:order-1 xl:max-w-none">
               <CardDetailPreview />
             </Reveal>
 
             <div className="order-1 min-w-0 xl:order-2">
-              <Reveal>
+              <Reveal from="right">
                 <SectionLabel number="03" label="The card" />
                 <h2 className="mt-5 font-display text-[32px] font-medium leading-[1.06] tracking-[-0.035em] text-white sm:text-[42px]">
                   The whole story, on one card.
                 </h2>
               </Reveal>
-              <Reveal delay={90}>
+              <Reveal from="right" delay={90}>
                 <p className="mt-5 max-w-[420px] text-[15px] leading-[1.75] text-white/55">
                   Assign an owner, set a date, attach the brief. Break the work into a checklist, leave a
                   comment, and move it forward — without opening another app.
                 </p>
               </Reveal>
-              <Reveal delay={160}>
+              <Reveal from="right" delay={160}>
                 <ul className="mt-7 space-y-3">
                   <FeaturePoint>Assignees, labels, due dates, and attachments.</FeaturePoint>
                   <FeaturePoint>Checklists and comments that travel with the card.</FeaturePoint>
@@ -237,7 +272,7 @@ function LandingPage() {
         {/* Supporting features */}
         <section className="border-t border-white/[0.06]">
           <div className="mx-auto max-w-[1180px] px-6 py-20 sm:py-24">
-            <Reveal>
+            <Reveal from="left">
               <SectionLabel number="04" label="The rest of the kit" />
               <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
                 <h2 className="max-w-[520px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
@@ -259,7 +294,7 @@ function LandingPage() {
         <section id="principles" className="scroll-mt-[88px] border-t border-white/[0.06]">
           <div className="mx-auto max-w-[1180px] px-6 py-20 sm:py-28">
             <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-              <Reveal>
+              <Reveal from="left">
                 <SectionLabel number="05" label="Principles" />
                 <h2 className="mt-5 max-w-[520px] font-display text-[34px] font-medium leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
                   Software should feel like a tool.
@@ -271,7 +306,7 @@ function LandingPage() {
 
               <div className="border-t border-white/[0.07]">
                 {PRINCIPLES.map((principle, index) => (
-                  <Reveal key={principle.number} delay={index * 90}>
+                  <Reveal key={principle.number} from="right" delay={index * 90}>
                     <div className="grid grid-cols-[40px_1fr] gap-4 border-b border-white/[0.07] py-6 sm:grid-cols-[56px_1fr]">
                       <span className="font-mono text-[11px] text-white/35">{principle.number}</span>
                       <div>
@@ -309,7 +344,7 @@ function LandingPage() {
           </div>
 
           <div className="relative mx-auto max-w-[1180px] px-6 py-24 sm:py-32">
-            <Reveal>
+            <Reveal from="left">
               <SectionLabel number="06" label="Start here" />
               <h2 className="mt-5 max-w-[720px] font-display text-[40px] font-medium leading-[1.02] tracking-[-0.045em] text-white sm:text-[60px]">
                 Give your team a{' '}

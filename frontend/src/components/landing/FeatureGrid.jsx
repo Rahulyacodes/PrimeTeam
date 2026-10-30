@@ -54,7 +54,12 @@ export default function FeatureGrid() {
 
       <div className="relative grid sm:grid-cols-2">
         {FEATURES.map((feature, index) => (
-          <Reveal key={feature.title} delay={index * 90} className={FEATURE_BORDERS[index]}>
+          <Reveal
+            key={feature.title}
+            from={index % 2 === 0 ? 'left' : 'right'}
+            delay={(index % 2) * 90}
+            className={FEATURE_BORDERS[index]}
+          >
             <FeatureCard
               index={index}
               title={feature.title}
